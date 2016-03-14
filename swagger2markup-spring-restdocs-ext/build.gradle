@@ -1,0 +1,5 @@
+description = 'Swagger2Markup Spring Rest Docs extension'
+
+dependencies {
+    compile project(":swagger2markup-extension-commons")
+}

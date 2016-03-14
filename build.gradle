@@ -1,0 +1,54 @@
+buildscript {
+    repositories {
+        jcenter()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.0.1'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.2'
+        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.0.0"
+    }
+}
+description = 'Swagger2Markup extensions.'
+version = '1.0.0-SNAPSHOT'
+group = 'io.github.robwin'
+
+subprojects {
+    apply plugin: 'java'
+    apply from: "$rootDir/gradle/publishing.gradle"
+    apply from: "$rootDir/gradle/coverage.gradle"
+
+    ext {
+        junit = "4.11"
+        swagger2markup = "1.0.0-SNAPSHOT"
+    }
+
+    tasks.withType(JavaCompile) {
+        sourceCompatibility = "1.7"
+        targetCompatibility = "1.7"
+        options.deprecation = true
+        options.encoding = 'UTF-8'
+        options.compilerArgs << "-Xlint:unchecked"
+    }
+
+    repositories {
+        jcenter()
+        mavenCentral()
+        maven {
+            url "https://oss.jfrog.org/artifactory/oss-snapshot-local"
+        }
+        //mavenLocal()
+    }
+
+    dependencies {
+        compile "io.github.robwin:swagger2markup:${swagger2markup}"
+        testCompile "junit:junit:${junit}"
+        testCompile 'ch.qos.logback:logback-classic:1.1.2'
+        testCompile 'org.assertj:assertj-core:2.2.0'
+        testCompile 'com.sksamuel.diff:diff:1.1.11'
+    }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.11'
+}

@@ -1,0 +1,5 @@
+description = 'Swagger2Markup import files extension'
+
+dependencies {
+    compile project(":swagger2markup-extension-commons")
+}

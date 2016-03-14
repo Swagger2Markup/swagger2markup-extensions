@@ -1,0 +1,8 @@
+language: java
+jdk:
+- oraclejdk7
+before_install:
+- chmod +x gradlew
+after_success:
+- ./gradlew jacocoTestReport coveralls
+- ./gradlew artifactoryPublish -PbintrayUsername="${BINTRAY_USER}" -PbintrayApiKey="${BINTRAY_KEY}"
