@@ -11,7 +11,7 @@ buildscript {
 }
 description = 'Swagger2Markup extensions.'
 version = '1.0.0-SNAPSHOT'
-group = 'io.github.robwin'
+group = 'io.github.swagger2markup'
 
 subprojects {
     apply plugin: 'java'
@@ -32,20 +32,20 @@ subprojects {
     }
 
     repositories {
+        //mavenLocal()
         jcenter()
         mavenCentral()
         maven {
             url "https://oss.jfrog.org/artifactory/oss-snapshot-local"
         }
-        //mavenLocal()
     }
 
     dependencies {
-        compile "io.github.robwin:swagger2markup:${swagger2markup}"
+        compile "io.github.swagger2markup:swagger2markup:${swagger2markup}"
         testCompile "junit:junit:${junit}"
         testCompile 'ch.qos.logback:logback-classic:1.1.2'
         testCompile 'org.assertj:assertj-core:2.2.0'
-        testCompile 'com.sksamuel.diff:diff:1.1.11'
+
     }
 }
 

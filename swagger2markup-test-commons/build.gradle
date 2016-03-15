@@ -1,0 +1,6 @@
+description = 'Common test classes for Swagger2markup extensions.'
+
+dependencies {
+    compile project(":swagger2markup-extension-commons")
+    compile 'io.github.robwin:assertj-diff:0.1.1'
+}
