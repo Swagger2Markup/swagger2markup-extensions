@@ -1,0 +1,5 @@
+= Swagger2Markup Extensions
+:author: Robert Winkler
+:hardbreaks:
+
+image:https://travis-ci.org/Swagger2Markup/swagger2markup-extensions.svg?branch=master["Build Status", link="https://travis-ci.org/Swagger2Markup/swagger2markup-extensions"]
