@@ -18,11 +18,13 @@ package io.github.swagger2markup.extensions;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Throwables;
+import io.github.robwin.markup.builder.MarkupLanguage;
 import io.github.swagger2markup.Swagger2MarkupConverter;
 import io.github.swagger2markup.builder.Swagger2MarkupProperties;
 import io.github.swagger2markup.model.PathOperation;
 import io.github.swagger2markup.spi.PathsDocumentExtension;
 import io.github.swagger2markup.utils.IOUtils;
+import io.github.swagger2markup.utils.URIUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
@@ -31,7 +33,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.Reader;
 import java.net.URI;
-import java.nio.file.Paths;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -50,25 +51,29 @@ public final class SpringRestDocsExtension extends PathsDocumentExtension {
     private static final String PROPERTY_SNIPPET_BASE_URI = "snippetBaseUri";
     private static final String DEFAULT_EXTENSION_ID = "springRestDocs";
     private static final String PROPERTY_DEFAULT_SNIPPETS = "defaultSnippets";
+    private static final String PROPERTY_MARKUP_LANGUAGE = "markupLanguage";
 
     protected URI snippetBaseUri;
     protected Map<String, String> snippets = new LinkedHashMap<>();
     private String extensionId = DEFAULT_EXTENSION_ID;
+    private MarkupLanguage extensionMarkupLanguage = MarkupLanguage.ASCIIDOC;
 
     /**
      * Instantiate extension with the default extension id.
      * @param snippetBaseUri base URI where the snippets are stored
+     * @param extensionMarkupLanguage the MarkupLanguage of the snippets content
      */
-    public SpringRestDocsExtension(URI snippetBaseUri) {
-        this(null, snippetBaseUri);
+    public SpringRestDocsExtension(URI snippetBaseUri, MarkupLanguage extensionMarkupLanguage) {
+        this(null, snippetBaseUri, extensionMarkupLanguage);
     }
 
     /**
      * Instantiate extension
      * @param extensionId the unique ID of the extension
      * @param snippetBaseUri base URI where the snippets are stored
+     * @param extensionMarkupLanguage the MarkupLanguage of the snippets content
      */
-    public SpringRestDocsExtension(String extensionId, URI snippetBaseUri) {
+    public SpringRestDocsExtension(String extensionId, URI snippetBaseUri, MarkupLanguage extensionMarkupLanguage) {
         super();
         Validate.notNull(extensionId);
         Validate.notNull(snippetBaseUri);
@@ -76,6 +81,7 @@ public final class SpringRestDocsExtension extends PathsDocumentExtension {
             this.extensionId = extensionId;
         }
         this.snippetBaseUri = snippetBaseUri;
+        this.extensionMarkupLanguage = extensionMarkupLanguage;
     }
 
     public SpringRestDocsExtension() {
@@ -91,18 +97,20 @@ public final class SpringRestDocsExtension extends PathsDocumentExtension {
             withDefaultSnippets();
         }
         if (snippetBaseUriProperty.isPresent()) {
-            snippetBaseUri = snippetBaseUriProperty.get();
-            if (snippetBaseUri.getScheme() == null) {
-                snippetBaseUri = Paths.get(snippetBaseUri.getPath()).toUri();
-            }
+            snippetBaseUri = URIUtils.convertUriWithoutSchemeToFileScheme(snippetBaseUriProperty.get());
         }
         else{
             if (globalContext.getSwaggerLocation() == null) {
                 if (logger.isWarnEnabled())
                     logger.warn("Disable SpringRestDocsExtension > Can't set default snippetBaseUri from swaggerLocation. You have to explicitly configure the snippetBaseUri.");
             } else {
-                snippetBaseUri = IOUtils.uriParent(globalContext.getSwaggerLocation());
+                snippetBaseUri = URIUtils.uriParent(globalContext.getSwaggerLocation());
             }
+        }
+
+        Optional<MarkupLanguage> extensionMarkupLanguageProperty = extensionsProperties.getMarkupLanguage(extensionId + "." + PROPERTY_MARKUP_LANGUAGE);
+        if (extensionMarkupLanguageProperty.isPresent()) {
+            extensionMarkupLanguage = extensionMarkupLanguageProperty.get();
         }
     }
 
@@ -164,7 +172,7 @@ public final class SpringRestDocsExtension extends PathsDocumentExtension {
         if (snippetContent.isPresent()) {
             try {
                 context.getMarkupDocBuilder().sectionTitleLevel(1 + levelOffset(context), title);
-                context.getMarkupDocBuilder().importMarkup(snippetContent.get(), levelOffset(context) + 1);
+                context.getMarkupDocBuilder().importMarkup(snippetContent.get(), extensionMarkupLanguage, levelOffset(context) + 1);
             } catch (IOException e) {
                 throw new RuntimeException(String.format("Failed to process snippet URI : %s", snippetUri), e);
             } finally {

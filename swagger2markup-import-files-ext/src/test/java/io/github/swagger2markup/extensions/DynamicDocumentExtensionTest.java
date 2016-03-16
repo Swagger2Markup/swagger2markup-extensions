@@ -20,6 +20,8 @@ import io.github.robwin.markup.builder.MarkupLanguage;
 import io.github.swagger2markup.Swagger2MarkupConfig;
 import io.github.swagger2markup.Swagger2MarkupConverter;
 import io.github.swagger2markup.Swagger2MarkupExtensionRegistry;
+import io.github.swagger2markup.builder.Swagger2MarkupConfigBuilder;
+import io.github.swagger2markup.builder.Swagger2MarkupExtensionRegistryBuilder;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
@@ -28,6 +30,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Properties;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -41,11 +44,13 @@ public class DynamicDocumentExtensionTest {
         FileUtils.deleteQuietly(outputDirectory.toFile());
 
         //When
-        Swagger2MarkupConfig config = Swagger2MarkupConfig.ofDefaults()
+        Properties properties = new Properties();
+        properties.load(DynamicDocumentExtensionTest.class.getResourceAsStream("/config/asciidoc/config.properties"));
+        Swagger2MarkupConfig config = new Swagger2MarkupConfigBuilder(properties)
                 .build();
-        Swagger2MarkupExtensionRegistry registry = Swagger2MarkupExtensionRegistry.ofEmpty()
-                .withDefinitionsDocumentExtension(new DynamicDefinitionsDocumentExtension(Paths.get("src/test/resources/docs/asciidoc/extensions")))
-                .withPathsDocumentExtension(new DynamicPathsDocumentExtension(Paths.get("src/test/resources/docs/asciidoc/extensions")))
+        Swagger2MarkupExtensionRegistry registry = new Swagger2MarkupExtensionRegistryBuilder()
+                //.withDefinitionsDocumentExtension(new DynamicDefinitionsDocumentExtension(Paths.get("src/test/resources/docs/asciidoc/extensions")))
+                //.withPathsDocumentExtension(new DynamicPathsDocumentExtension(Paths.get("src/test/resources/docs/asciidoc/extensions")))
                 .build();
         Swagger2MarkupConverter.from(file)
                 .withConfig(config)
@@ -69,12 +74,14 @@ public class DynamicDocumentExtensionTest {
         FileUtils.deleteQuietly(outputDirectory.toFile());
 
         //When
-        Swagger2MarkupConfig config = Swagger2MarkupConfig.ofDefaults()
+        Properties properties = new Properties();
+        properties.load(DynamicDocumentExtensionTest.class.getResourceAsStream("/config/markdown/config.properties"));
+        Swagger2MarkupConfig config = new Swagger2MarkupConfigBuilder(properties)
                 .withMarkupLanguage(MarkupLanguage.MARKDOWN)
                 .build();
-        Swagger2MarkupExtensionRegistry registry = Swagger2MarkupExtensionRegistry.ofEmpty()
-                .withDefinitionsDocumentExtension(new DynamicDefinitionsDocumentExtension(Paths.get("src/test/resources/docs/markdown/extensions")))
-                .withPathsDocumentExtension(new DynamicPathsDocumentExtension(Paths.get("src/test/resources/docs/markdown/extensions")))
+        Swagger2MarkupExtensionRegistry registry = new Swagger2MarkupExtensionRegistryBuilder()
+                //.withDefinitionsDocumentExtension(new DynamicDefinitionsDocumentExtension(Paths.get("src/test/resources/docs/markdown/extensions")))
+                //.withPathsDocumentExtension(new DynamicPathsDocumentExtension(Paths.get("src/test/resources/docs/markdown/extensions")))
                 .build();
         Swagger2MarkupConverter.from(file)
                 .withConfig(config)

@@ -16,9 +16,13 @@
 
 package io.github.swagger2markup.extensions;
 
+import com.google.common.base.Optional;
+import io.github.robwin.markup.builder.MarkupLanguage;
 import io.github.swagger2markup.Swagger2MarkupConverter;
+import io.github.swagger2markup.builder.Swagger2MarkupProperties;
 import io.github.swagger2markup.utils.IOUtils;
 import io.github.swagger2markup.spi.PathsDocumentExtension;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,26 +46,69 @@ public final class DynamicPathsDocumentExtension extends PathsDocumentExtension 
 
     protected Path contentPath;
 
+    private static final String DEFAULT_EXTENSION_ID = "dynamicPaths";
+    private static final String PROPERTY_CONTENT_PATH = "contentPath";
+    private static final String PROPERTY_MARKUP_LANGUAGE = "markupLanguage";
+    private String extensionId = DEFAULT_EXTENSION_ID;
+    private MarkupLanguage extensionMarkupLanguage = MarkupLanguage.ASCIIDOC;
+
+    /**
+     * Instantiate extension with the default extension id.
+     * @param contentPath the base Path where the content is stored
+     * @param extensionMarkupLanguage the MarkupLanguage of the extension content
+     */
+    public DynamicPathsDocumentExtension(Path contentPath, MarkupLanguage extensionMarkupLanguage) {
+        this(null, contentPath, extensionMarkupLanguage);
+    }
+
+    /**
+     * Instantiate extension
+     * @param extensionId the unique ID of the extension
+     * @param contentPath the base Path where the content is stored
+     * @param extensionMarkupLanguage the MarkupLanguage of the extension content
+     */
+    public DynamicPathsDocumentExtension(String extensionId, Path contentPath, MarkupLanguage extensionMarkupLanguage) {
+        super();
+        Validate.notNull(extensionId);
+        Validate.notNull(contentPath);
+        if(StringUtils.isNoneBlank(extensionId)) {
+            this.extensionId = extensionId;
+        }
+        this.contentPath = contentPath;
+        this.extensionMarkupLanguage = extensionMarkupLanguage;
+    }
+
     public DynamicPathsDocumentExtension() {
         super();
     }
 
-    public DynamicPathsDocumentExtension(Path contentPath) {
-        super();
-
-        Validate.notNull(contentPath);
-        this.contentPath = contentPath;
-    }
-
     @Override
     public void init(Swagger2MarkupConverter.Context globalContext) {
-        if (contentPath == null) {
-            if (globalContext.getSwaggerLocation() == null || !globalContext.getSwaggerLocation().getScheme().equals("file")) {
-                if (logger.isWarnEnabled())
-                    logger.warn("Disable DynamicOperationsContentExtension > Can't set default contentPath from swaggerLocation. You have to explicitly configure the content path.");
-            } else {
-                contentPath = Paths.get(globalContext.getSwaggerLocation()).getParent();
+        Swagger2MarkupProperties extensionsProperties = globalContext.getConfig().getExtensionsProperties();
+        Optional<String> contentPathString = extensionsProperties.getString(extensionId + "." + PROPERTY_CONTENT_PATH);
+        Optional<Path> contentPathProperty;
+        if(contentPathString.isPresent()){
+            contentPathProperty = Optional.of(Paths.get(contentPathString.get()));
+        }else{
+            contentPathProperty = Optional.absent();
+        }
+
+        if (contentPathProperty.isPresent()) {
+            contentPath = contentPathProperty.get();
+        }
+        else {
+            if (contentPath == null) {
+                if (globalContext.getSwaggerLocation() == null || !globalContext.getSwaggerLocation().getScheme().equals("file")) {
+                    if (logger.isWarnEnabled())
+                        logger.warn("Disable DynamicOperationsContentExtension > Can't set default contentPath from swaggerLocation. You have to explicitly configure the content path.");
+                } else {
+                    contentPath = Paths.get(globalContext.getSwaggerLocation()).getParent();
+                }
             }
+        }
+        Optional<MarkupLanguage> extensionMarkupLanguageProperty = extensionsProperties.getMarkupLanguage(extensionId + "." + PROPERTY_MARKUP_LANGUAGE);
+        if (extensionMarkupLanguageProperty.isPresent()) {
+            extensionMarkupLanguage = extensionMarkupLanguageProperty.get();
         }
     }
 
@@ -74,19 +121,19 @@ public final class DynamicPathsDocumentExtension extends PathsDocumentExtension 
             PathsDocumentExtension.Position position = context.getPosition();
             switch (position) {
                 case DOCUMENT_BEFORE:
-                    dynamicContent.extensionsSection(contentPath, contentPrefix(position), levelOffset(context));
+                    dynamicContent.extensionsSection(extensionMarkupLanguage, contentPath, contentPrefix(position), levelOffset(context));
                     break;
                 case DOCUMENT_BEGIN:
-                    dynamicContent.extensionsSection(contentPath, contentPrefix(position), levelOffset(context));
+                    dynamicContent.extensionsSection(extensionMarkupLanguage, contentPath, contentPrefix(position), levelOffset(context));
                     break;
                 case DOCUMENT_END:
-                    dynamicContent.extensionsSection(contentPath, contentPrefix(position), levelOffset(context));
+                    dynamicContent.extensionsSection(extensionMarkupLanguage, contentPath, contentPrefix(position), levelOffset(context));
                     break;
                 case OPERATION_BEGIN:
-                    dynamicContent.extensionsSection(contentPath.resolve(IOUtils.normalizeName(context.getOperation().get().getId())), contentPrefix(position), levelOffset(context));
+                    dynamicContent.extensionsSection(extensionMarkupLanguage, contentPath.resolve(IOUtils.normalizeName(context.getOperation().get().getId())), contentPrefix(position), levelOffset(context));
                     break;
                 case OPERATION_END:
-                    dynamicContent.extensionsSection(contentPath.resolve(IOUtils.normalizeName(context.getOperation().get().getId())), contentPrefix(position), levelOffset(context));
+                    dynamicContent.extensionsSection(extensionMarkupLanguage, contentPath.resolve(IOUtils.normalizeName(context.getOperation().get().getId())), contentPrefix(position), levelOffset(context));
                     break;
                 default:
                     throw new RuntimeException(String.format("Unknown position '%s'", position));

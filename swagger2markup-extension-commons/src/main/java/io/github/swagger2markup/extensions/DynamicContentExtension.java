@@ -21,6 +21,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
+import io.github.robwin.markup.builder.MarkupLanguage;
 import io.github.swagger2markup.Swagger2MarkupConverter;
 import io.github.swagger2markup.spi.ContentContext;
 import org.apache.commons.io.FilenameUtils;
@@ -48,11 +49,12 @@ public class DynamicContentExtension extends ContentExtension {
     /**
      * Builds extension sections
      *
+     * @param extensionMarkupLanguage the MarkupLanguage of the snippets content
      * @param contentPath the path where the content files reside
      * @param prefix      extension file prefix
      * @param levelOffset import markup level offset
      */
-    public void extensionsSection(Path contentPath, final String prefix, int levelOffset) {
+    public void extensionsSection(MarkupLanguage extensionMarkupLanguage, Path contentPath, final String prefix, int levelOffset) {
         final Collection<String> filenameExtensions = Collections2.transform(globalContext.getConfig().getMarkupLanguage().getFileNameExtensions(), new Function<String, String>() {
             public String apply(String input) {
                 return StringUtils.stripStart(input, ".");
@@ -78,7 +80,7 @@ public class DynamicContentExtension extends ContentExtension {
 
                     if (extensionContent.isPresent()) {
                         try {
-                            contentContext.getMarkupDocBuilder().importMarkup(extensionContent.get(), levelOffset);
+                            contentContext.getMarkupDocBuilder().importMarkup(extensionContent.get(), extensionMarkupLanguage, levelOffset);
                         } catch (IOException e) {
                             throw new RuntimeException(String.format("Failed to read extension file %s", extension), e);
                         } finally {

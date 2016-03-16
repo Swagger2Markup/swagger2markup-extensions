@@ -21,6 +21,7 @@ import io.github.swagger2markup.Swagger2MarkupConverter;
 import io.github.swagger2markup.builder.Swagger2MarkupProperties;
 import io.github.swagger2markup.spi.DefinitionsDocumentExtension;
 import io.github.swagger2markup.utils.IOUtils;
+import io.github.swagger2markup.utils.URIUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
@@ -29,7 +30,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.Reader;
 import java.net.URI;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -105,10 +105,7 @@ public final class SchemaExtension extends DefinitionsDocumentExtension {
             withDefaultSchemas();
         }
         if (schemaBaseUriProperty.isPresent()) {
-            schemaBaseUri = schemaBaseUriProperty.get();
-            if (schemaBaseUri.getScheme() == null) {
-                schemaBaseUri = Paths.get(schemaBaseUri.getPath()).toUri();
-            }
+            schemaBaseUri = URIUtils.convertUriWithoutSchemeToFileScheme(schemaBaseUriProperty.get());
         }
         else {
             if (schemaBaseUri == null) {
@@ -116,7 +113,7 @@ public final class SchemaExtension extends DefinitionsDocumentExtension {
                     if (logger.isWarnEnabled())
                         logger.warn("Disable SchemaExtension > Can't set default schemaBaseUri from swaggerLocation. You have to explicitly configure the schemaBaseUri.");
                 } else {
-                    schemaBaseUri = IOUtils.uriParent(globalContext.getSwaggerLocation());
+                    schemaBaseUri = URIUtils.uriParent(globalContext.getSwaggerLocation());
                 }
             }
         }
