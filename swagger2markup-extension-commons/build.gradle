@@ -1,1 +1,3 @@
+apply from: "$rootDir/gradle/publishing.gradle"
+
 description = 'Common classes for Swagger2markup extensions.'
