@@ -85,14 +85,7 @@ public final class DynamicSecurityDocumentExtension extends SecurityDocumentExte
     @Override
     public void init(Swagger2MarkupConverter.Context globalContext) {
         Swagger2MarkupProperties extensionsProperties = globalContext.getConfig().getExtensionsProperties();
-        Optional<String> contentPathString = extensionsProperties.getString(extensionId + "." + PROPERTY_CONTENT_PATH);
-        Optional<Path> contentPathProperty;
-        if(contentPathString.isPresent()){
-            contentPathProperty = Optional.of(Paths.get(contentPathString.get()));
-        }else{
-            contentPathProperty = Optional.absent();
-        }
-
+        Optional<Path> contentPathProperty = extensionsProperties.getPath(extensionId + "." + PROPERTY_CONTENT_PATH);
         if (contentPathProperty.isPresent()) {
             contentPath = contentPathProperty.get();
         }
