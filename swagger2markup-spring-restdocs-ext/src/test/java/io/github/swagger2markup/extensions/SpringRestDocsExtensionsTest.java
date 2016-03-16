@@ -19,6 +19,8 @@ import io.github.swagger2markup.Swagger2MarkupConfig;
 import io.github.swagger2markup.Swagger2MarkupConverter;
 import io.github.swagger2markup.Swagger2MarkupExtensionRegistry;
 import io.github.swagger2markup.assertions.DiffUtils;
+import io.github.swagger2markup.builder.Swagger2MarkupConfigBuilder;
+import io.github.swagger2markup.builder.Swagger2MarkupExtensionRegistryBuilder;
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,6 +33,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -54,11 +57,13 @@ public class SpringRestDocsExtensionsTest {
         FileUtils.deleteQuietly(outputDirectory.toFile());
 
         //When
-        Swagger2MarkupExtensionRegistry registry = Swagger2MarkupExtensionRegistry.ofEmpty()
-                .withPathsDocumentExtension(new SpringRestDocsExtension(Paths.get("src/test/resources/docs/asciidoc/paths").toUri()).withDefaultSnippets())
+        Swagger2MarkupExtensionRegistry registry = new Swagger2MarkupExtensionRegistryBuilder()
+                //.withPathsDocumentExtension(new SpringRestDocsExtension(Paths.get("src/test/resources/docs/asciidoc/paths").toUri()).withDefaultSnippets())
                 .build();
 
-        Swagger2MarkupConfig config = Swagger2MarkupConfig.ofDefaults()
+        Properties properties = new Properties();
+        properties.load(SpringRestDocsExtensionsTest.class.getResourceAsStream("/config/config.properties"));
+        Swagger2MarkupConfig config = new Swagger2MarkupConfigBuilder(properties)
                 .build();
 
         Swagger2MarkupConverter.from(file)

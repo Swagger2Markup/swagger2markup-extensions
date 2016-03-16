@@ -1,4 +1,3 @@
-== curl-request
 
 [source,bash]
 ----

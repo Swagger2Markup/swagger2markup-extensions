@@ -19,9 +19,11 @@ package io.github.swagger2markup.extensions;
 import com.google.common.base.Optional;
 import com.google.common.base.Throwables;
 import io.github.swagger2markup.Swagger2MarkupConverter;
+import io.github.swagger2markup.builder.Swagger2MarkupProperties;
 import io.github.swagger2markup.model.PathOperation;
 import io.github.swagger2markup.spi.PathsDocumentExtension;
 import io.github.swagger2markup.utils.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.Reader;
 import java.net.URI;
+import java.nio.file.Paths;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -44,18 +47,34 @@ public final class SpringRestDocsExtension extends PathsDocumentExtension {
         put("http-response", "HTTP response");
         put("curl-request", "Curl request");
     }};
+    private static final String PROPERTY_SNIPPET_BASE_URI = "snippetBaseUri";
+    private static final String DEFAULT_EXTENSION_ID = "springRestDocs";
+    private static final String PROPERTY_DEFAULT_SNIPPETS = "defaultSnippets";
 
     protected URI snippetBaseUri;
     protected Map<String, String> snippets = new LinkedHashMap<>();
+    private String extensionId = DEFAULT_EXTENSION_ID;
 
     /**
      * Instantiate extension
      * @param snippetBaseUri base URI where are snippets are stored
      */
     public SpringRestDocsExtension(URI snippetBaseUri) {
-        super();
+        this(null, snippetBaseUri);
+    }
 
+    /**
+     * Instantiate extension
+     * @param extensionId the unique ID of the extension
+     * @param snippetBaseUri base URI where are snippets are stored
+     */
+    public SpringRestDocsExtension(String extensionId, URI snippetBaseUri) {
+        super();
+        Validate.notNull(extensionId);
         Validate.notNull(snippetBaseUri);
+        if(StringUtils.isNoneBlank(extensionId)) {
+            this.extensionId = extensionId;
+        }
         this.snippetBaseUri = snippetBaseUri;
     }
 
@@ -65,7 +84,19 @@ public final class SpringRestDocsExtension extends PathsDocumentExtension {
 
     @Override
     public void init(Swagger2MarkupConverter.Context globalContext) {
-        if (snippetBaseUri == null) {
+        Swagger2MarkupProperties extensionsProperties = globalContext.getConfig().getExtensionsProperties();
+        Optional<URI> snippetBaseUriProperty = extensionsProperties.getURI(extensionId + "." + PROPERTY_SNIPPET_BASE_URI);
+        boolean withDefaultSnippets = extensionsProperties.getBoolean(extensionId + "." + PROPERTY_DEFAULT_SNIPPETS, true);
+        if(withDefaultSnippets){
+            withDefaultSnippets();
+        }
+        if (snippetBaseUriProperty.isPresent()) {
+            snippetBaseUri = snippetBaseUriProperty.get();
+            if (snippetBaseUri.getScheme() == null) {
+                snippetBaseUri = Paths.get(snippetBaseUri.getPath()).toUri();
+            }
+        }
+        else{
             if (globalContext.getSwaggerLocation() == null) {
                 if (logger.isWarnEnabled())
                     logger.warn("Disable SpringRestDocsExtension > Can't set default snippetBaseUri from swaggerLocation. You have to explicitly configure the snippetBaseUri.");
@@ -81,7 +112,6 @@ public final class SpringRestDocsExtension extends PathsDocumentExtension {
      */
     public SpringRestDocsExtension withDefaultSnippets() {
         snippets.putAll(DEFAULT_SNIPPETS);
-
         return this;
     }
 
@@ -92,7 +122,6 @@ public final class SpringRestDocsExtension extends PathsDocumentExtension {
      */
     public SpringRestDocsExtension withExplicitSnippets(Map<String, String> snippets) {
         this.snippets.putAll(snippets);
-
         return this;
     }
 
