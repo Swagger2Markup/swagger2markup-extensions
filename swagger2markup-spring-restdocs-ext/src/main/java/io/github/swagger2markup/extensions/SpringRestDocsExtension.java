@@ -56,8 +56,8 @@ public final class SpringRestDocsExtension extends PathsDocumentExtension {
     private String extensionId = DEFAULT_EXTENSION_ID;
 
     /**
-     * Instantiate extension
-     * @param snippetBaseUri base URI where are snippets are stored
+     * Instantiate extension with the default extension id.
+     * @param snippetBaseUri base URI where the snippets are stored
      */
     public SpringRestDocsExtension(URI snippetBaseUri) {
         this(null, snippetBaseUri);
@@ -66,7 +66,7 @@ public final class SpringRestDocsExtension extends PathsDocumentExtension {
     /**
      * Instantiate extension
      * @param extensionId the unique ID of the extension
-     * @param snippetBaseUri base URI where are snippets are stored
+     * @param snippetBaseUri base URI where the snippets are stored
      */
     public SpringRestDocsExtension(String extensionId, URI snippetBaseUri) {
         super();

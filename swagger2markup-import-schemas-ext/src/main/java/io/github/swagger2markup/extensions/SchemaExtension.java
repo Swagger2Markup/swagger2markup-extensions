@@ -18,8 +18,10 @@ package io.github.swagger2markup.extensions;
 
 import com.google.common.base.Optional;
 import io.github.swagger2markup.Swagger2MarkupConverter;
+import io.github.swagger2markup.builder.Swagger2MarkupProperties;
 import io.github.swagger2markup.spi.DefinitionsDocumentExtension;
 import io.github.swagger2markup.utils.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.Reader;
 import java.net.URI;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,14 +50,35 @@ public final class SchemaExtension extends DefinitionsDocumentExtension {
         add(new SchemaMetadata("XML Schema", "xsd", "xml"));
     }};
 
+    private static final String PROPERTY_SCHEMAS_BASE_URI = "schemaBaseUri";
+    private static final String DEFAULT_EXTENSION_ID = "schema";
+    private static final String PROPERTY_DEFAULT_SCHEMAS = "defaultSchemas";
+
     protected List<SchemaMetadata> schemas = new ArrayList<>();
+    private String extensionId = DEFAULT_EXTENSION_ID;
 
     protected URI schemaBaseUri;
 
+    /**
+     * Instantiate extension with the default extension id.
+     * @param schemaBaseUri base URI where the schemas are stored
+     */
     public SchemaExtension(URI schemaBaseUri) {
-        super();
+        this(null, schemaBaseUri);
+    }
 
+    /**
+     * Instantiate extension
+     * @param extensionId the unique ID of the extension
+     * @param schemaBaseUri base URI where the schemas are stored
+     */
+    public SchemaExtension(String extensionId, URI schemaBaseUri) {
+        super();
+        Validate.notNull(extensionId);
         Validate.notNull(schemaBaseUri);
+        if(StringUtils.isNoneBlank(extensionId)) {
+            this.extensionId = extensionId;
+        }
         this.schemaBaseUri = schemaBaseUri;
     }
 
@@ -68,18 +92,32 @@ public final class SchemaExtension extends DefinitionsDocumentExtension {
     }
 
     public SchemaExtension withSchemas(List<SchemaMetadata> schemas) {
-        schemas.addAll(schemas);
+        this.schemas.addAll(schemas);
         return this;
     }
 
     @Override
     public void init(Swagger2MarkupConverter.Context globalContext) {
-        if (schemaBaseUri == null) {
-            if (globalContext.getSwaggerLocation() == null) {
-                if (logger.isWarnEnabled())
-                    logger.warn("Disable SchemaExtension > Can't set default schemaBaseUri from swaggerLocation. You have to explicitly configure the schemaBaseUri.");
-            } else {
-                schemaBaseUri = IOUtils.uriParent(globalContext.getSwaggerLocation());
+        Swagger2MarkupProperties extensionsProperties = globalContext.getConfig().getExtensionsProperties();
+        Optional<URI> schemaBaseUriProperty = extensionsProperties.getURI(extensionId + "." + PROPERTY_SCHEMAS_BASE_URI);
+        boolean withDefaultSchemas = extensionsProperties.getBoolean(extensionId + "." + PROPERTY_DEFAULT_SCHEMAS, true);
+        if(withDefaultSchemas){
+            withDefaultSchemas();
+        }
+        if (schemaBaseUriProperty.isPresent()) {
+            schemaBaseUri = schemaBaseUriProperty.get();
+            if (schemaBaseUri.getScheme() == null) {
+                schemaBaseUri = Paths.get(schemaBaseUri.getPath()).toUri();
+            }
+        }
+        else {
+            if (schemaBaseUri == null) {
+                if (globalContext.getSwaggerLocation() == null) {
+                    if (logger.isWarnEnabled())
+                        logger.warn("Disable SchemaExtension > Can't set default schemaBaseUri from swaggerLocation. You have to explicitly configure the schemaBaseUri.");
+                } else {
+                    schemaBaseUri = IOUtils.uriParent(globalContext.getSwaggerLocation());
+                }
             }
         }
     }

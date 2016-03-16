@@ -18,6 +18,8 @@ package io.github.swagger2markup.extensions;
 import io.github.swagger2markup.Swagger2MarkupConfig;
 import io.github.swagger2markup.Swagger2MarkupConverter;
 import io.github.swagger2markup.Swagger2MarkupExtensionRegistry;
+import io.github.swagger2markup.builder.Swagger2MarkupConfigBuilder;
+import io.github.swagger2markup.builder.Swagger2MarkupExtensionRegistryBuilder;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
@@ -26,6 +28,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Properties;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -41,10 +44,12 @@ public class SchemaExtensionTest {
         FileUtils.deleteQuietly(outputDirectory.toFile());
 
         //When
-        Swagger2MarkupConfig config = Swagger2MarkupConfig.ofDefaults()
+        Properties properties = new Properties();
+        properties.load(SchemaExtensionTest.class.getResourceAsStream("/config/config.properties"));
+        Swagger2MarkupConfig config = new Swagger2MarkupConfigBuilder(properties)
                 .build();
-        Swagger2MarkupExtensionRegistry registry = Swagger2MarkupExtensionRegistry.ofEmpty()
-                .withDefinitionsDocumentExtension(new SchemaExtension(Paths.get("src/test/resources/docs/asciidoc/extensions").toUri()))
+        Swagger2MarkupExtensionRegistry registry = new Swagger2MarkupExtensionRegistryBuilder()
+                //.withDefinitionsDocumentExtension(new SchemaExtension(Paths.get("src/test/resources/docs/asciidoc/extensions").toUri()))
                 .build();
         Swagger2MarkupConverter.from(file)
                 .withConfig(config)
