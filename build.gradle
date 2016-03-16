@@ -9,13 +9,13 @@ buildscript {
         classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.0.0"
     }
 }
-description = 'Swagger2Markup extensions.'
-version = '1.0.0-SNAPSHOT'
-group = 'io.github.swagger2markup'
 
 subprojects {
+    description = 'Swagger2Markup extensions.'
+    version = '1.0.0-SNAPSHOT'
+    group = 'io.github.swagger2markup'
+
     apply plugin: 'java'
-    apply from: "$rootDir/gradle/publishing.gradle"
     apply from: "$rootDir/gradle/coverage.gradle"
 
     ext {

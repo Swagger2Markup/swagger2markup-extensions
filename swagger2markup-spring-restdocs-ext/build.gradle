@@ -1,3 +1,5 @@
+apply from: "$rootDir/gradle/publishing.gradle"
+
 description = 'Swagger2Markup Spring Rest Docs extension'
 
 dependencies {
