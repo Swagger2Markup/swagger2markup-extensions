@@ -55,7 +55,7 @@ public class SchemaExtensionTest {
                 .withConfig(config)
                 .withExtensionRegistry(registry)
                 .build()
-                .intoFolder(outputDirectory);
+                .toFolder(outputDirectory);
 
         //Then
         assertThat(new String(Files.readAllBytes(outputDirectory.resolve("definitions.adoc")))).contains(

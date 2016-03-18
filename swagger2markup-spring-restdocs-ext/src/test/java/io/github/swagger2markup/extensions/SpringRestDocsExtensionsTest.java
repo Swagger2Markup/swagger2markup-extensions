@@ -70,7 +70,7 @@ public class SpringRestDocsExtensionsTest {
                 .withConfig(config)
                 .withExtensionRegistry(registry)
                 .build()
-                .intoFolder(outputDirectory);
+                .toFolder(outputDirectory);
 
         //Then
         String[] files = outputDirectory.toFile().list();

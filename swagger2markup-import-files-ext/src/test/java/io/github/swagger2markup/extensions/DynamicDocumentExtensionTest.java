@@ -56,7 +56,7 @@ public class DynamicDocumentExtensionTest {
                 .withConfig(config)
                 .withExtensionRegistry(registry)
                 .build()
-                .intoFolder(outputDirectory);
+                .toFolder(outputDirectory);
 
         //Then
         assertThat(new String(Files.readAllBytes(outputDirectory.resolve("paths.adoc")))).contains(
@@ -87,7 +87,7 @@ public class DynamicDocumentExtensionTest {
                 .withConfig(config)
                 .withExtensionRegistry(registry)
                 .build()
-                .intoFolder(outputDirectory);
+                .toFolder(outputDirectory);
 
         //Then
         assertThat(new String(Files.readAllBytes(outputDirectory.resolve("paths.md")))).contains(
