@@ -21,7 +21,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
-import io.github.robwin.markup.builder.MarkupLanguage;
+import io.github.swagger2markup.markup.builder.MarkupLanguage;
 import io.github.swagger2markup.Swagger2MarkupConverter;
 import io.github.swagger2markup.spi.ContentContext;
 import org.apache.commons.io.FilenameUtils;

@@ -16,7 +16,7 @@
 
 package io.github.swagger2markup.extensions;
 
-import io.github.robwin.markup.builder.MarkupLanguage;
+import io.github.swagger2markup.markup.builder.MarkupLanguage;
 import io.github.swagger2markup.Swagger2MarkupConfig;
 import io.github.swagger2markup.Swagger2MarkupConverter;
 import io.github.swagger2markup.Swagger2MarkupExtensionRegistry;

@@ -18,7 +18,7 @@ package io.github.swagger2markup.extensions;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Throwables;
-import io.github.robwin.markup.builder.MarkupLanguage;
+import io.github.swagger2markup.markup.builder.MarkupLanguage;
 import io.github.swagger2markup.Swagger2MarkupConverter;
 import io.github.swagger2markup.builder.Swagger2MarkupProperties;
 import io.github.swagger2markup.model.PathOperation;
