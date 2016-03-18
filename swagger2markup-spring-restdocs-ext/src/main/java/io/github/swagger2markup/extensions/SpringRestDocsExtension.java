@@ -44,9 +44,9 @@ public final class SpringRestDocsExtension extends PathsDocumentExtension {
     private static final Logger logger = LoggerFactory.getLogger(SpringRestDocsExtension.class);
 
     private static final Map<String, String> DEFAULT_SNIPPETS = new LinkedHashMap<String, String>() {{
-        put("http-request", "HTTP request");
-        put("http-response", "HTTP response");
-        put("curl-request", "Curl request");
+        put("http-request", "Example HTTP request");
+        put("http-response", "Example HTTP response");
+        put("curl-request", "Example Curl request");
     }};
     private static final String PROPERTY_SNIPPET_BASE_URI = "snippetBaseUri";
     private static final String DEFAULT_EXTENSION_ID = "springRestDocs";
