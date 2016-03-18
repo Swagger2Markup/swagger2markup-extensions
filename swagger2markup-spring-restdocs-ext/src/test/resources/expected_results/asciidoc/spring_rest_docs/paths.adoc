@@ -172,7 +172,6 @@ GET /pets/findByStatus
 
 
 ==== Description
-[%hardbreaks]
 Multiple status values can be provided with comma seperated strings
 
 
@@ -243,7 +242,6 @@ GET /pets/findByTags
 
 
 ==== Description
-[%hardbreaks]
 Muliple tags can be provided with comma seperated strings. Use tag1, tag2, tag3 for testing.
 
 
@@ -368,8 +366,7 @@ GET /pets/{petId}
 
 
 ==== Description
-[%hardbreaks]
-Returns a pet when ID < 10.  ID > 10 or nonintegers will simulate API error conditions
+Returns a pet when ID &lt; 10. ID &gt; 10 or nonintegers will simulate API error conditions
 
 
 ==== Parameters
@@ -554,8 +551,7 @@ GET /stores/order/{orderId}
 
 
 ==== Description
-[%hardbreaks]
-For valid response try integer IDs with value <= 5 or > 10. Other values will generated exceptions
+For valid response try integer IDs with value &lt;= 5 or &gt; 10. Other values will generated exceptions
 
 
 ==== Parameters
@@ -625,8 +621,7 @@ DELETE /stores/order/{orderId}
 
 
 ==== Description
-[%hardbreaks]
-For valid response try integer IDs with value < 1000. Anything above 1000 or nonintegers will generate API errors
+For valid response try integer IDs with value &lt; 1000. Anything above 1000 or nonintegers will generate API errors
 
 
 ==== Parameters
@@ -677,7 +672,6 @@ POST /users
 
 
 ==== Description
-[%hardbreaks]
 This can only be done by the logged in user.
 
 
@@ -949,7 +943,6 @@ PUT /users/{username}
 
 
 ==== Description
-[%hardbreaks]
 This can only be done by the logged in user.
 
 
@@ -1002,7 +995,6 @@ DELETE /users/{username}
 
 
 ==== Description
-[%hardbreaks]
 This can only be done by the logged in user.
 
 
