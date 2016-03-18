@@ -55,7 +55,7 @@ POST /pets
 |===
 
 
-==== HTTP request
+==== Example HTTP request
 
 
 [source,http]
@@ -69,7 +69,7 @@ Content-Length: 111
 
 
 
-==== HTTP response
+==== Example HTTP response
 
 
 [source,http]
@@ -83,7 +83,7 @@ SUCCESS
 
 
 
-==== Curl request
+==== Example Curl request
 
 
 [source,bash]
