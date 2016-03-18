@@ -157,7 +157,7 @@ public final class SchemaExtension extends DefinitionsDocumentExtension {
     private void schemaSection(Context context, SchemaMetadata schema, int levelOffset) {
         ContentExtension contentExtension = new ContentExtension(globalContext, context);
         URI schemaUri = definitionSchemaUri(context, context.getDefinitionName().get(), schema);
-
+        logger.info("Processing schema: {}", schemaUri.toString());
         try {
             Optional<Reader> extensionContent = contentExtension.readContentUri(schemaUri);
 

@@ -165,8 +165,8 @@ public final class SpringRestDocsExtension extends PathsDocumentExtension {
 
     public void snippetSection(Context context, String snippetName, String title) {
         ContentExtension content = new ContentExtension(globalContext, context);
-
         URI snippetUri = operationSnippetUri(context, context.getOperation().get(), snippetName);
+        logger.info("Processing Spring REST Docs snippet: {}", snippetUri.toString());
         Optional<Reader> snippetContent = content.readContentUri(snippetUri);
 
         if (snippetContent.isPresent()) {
