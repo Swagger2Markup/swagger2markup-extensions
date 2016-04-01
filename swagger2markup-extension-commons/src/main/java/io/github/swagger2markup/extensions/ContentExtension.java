@@ -16,18 +16,18 @@
 
 package io.github.swagger2markup.extensions;
 
-import com.google.common.base.Optional;
 import io.github.swagger2markup.Swagger2MarkupConverter;
 import io.github.swagger2markup.spi.ContentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.function.Consumer;
 
 public class ContentExtension {
 
@@ -43,21 +43,20 @@ public class ContentExtension {
     }
 
     /**
-     * Reads contents from a file
+     * Import contents from a file
      *
      * @param contentPath content file path
-     * @return content reader
+     * @param contentConsumer the consumer of the file content
+     *
      */
-    protected Optional<Reader> readContentPath(Path contentPath) {
+    protected void importContent(Path contentPath, Consumer<Reader> contentConsumer) {
 
         if (Files.isReadable(contentPath)) {
-            if (logger.isInfoEnabled()) {
-                logger.info("Content file {} processed", contentPath);
-            }
-            try {
-                Reader contentReader = new FileReader(contentPath.toFile());
-
-                return Optional.of(contentReader);
+            try (Reader contentReader = Files.newBufferedReader(contentPath, StandardCharsets.UTF_8)){
+                contentConsumer.accept(contentReader);
+                if (logger.isInfoEnabled()) {
+                    logger.info("Content file {} imported", contentPath);
+                }
             } catch (IOException e) {
                 if (logger.isWarnEnabled()) {
                     logger.warn("Failed to read content file {} > {}", contentPath, e.getMessage());
@@ -68,31 +67,24 @@ public class ContentExtension {
                 logger.debug("Failed to read content file {}", contentPath);
             }
         }
-
-        return Optional.absent();
     }
 
     /**
-     * Reads content from an Uri
+     * Import content from an Uri
      *
      * @param contentUri content file URI
-     * @return content reader
+     * @param contentConsumer the consumer of the file content
      */
-    protected Optional<Reader> readContentUri(URI contentUri) {
-        try {
-            Reader reader = io.github.swagger2markup.utils.IOUtils.uriReader(contentUri);
-
+    protected void importContent(URI contentUri, Consumer<Reader> contentConsumer) {
+        try (Reader contentReader = io.github.swagger2markup.utils.IOUtils.uriReader(contentUri)){
+            contentConsumer.accept(contentReader);
             if (logger.isInfoEnabled()) {
                 logger.info("Content URI {} processed", contentUri);
             }
-
-            return Optional.of(reader);
         } catch (IOException e) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Failed to read content URI {} > {}", contentUri, e.getMessage());
             }
         }
-
-        return Optional.absent();
     }
 }

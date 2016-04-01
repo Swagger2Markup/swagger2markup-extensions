@@ -16,11 +16,9 @@
 
 package io.github.swagger2markup.extensions;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Throwables;
-import io.github.swagger2markup.markup.builder.MarkupLanguage;
 import io.github.swagger2markup.Swagger2MarkupConverter;
 import io.github.swagger2markup.builder.Swagger2MarkupProperties;
+import io.github.swagger2markup.markup.builder.MarkupLanguage;
 import io.github.swagger2markup.model.PathOperation;
 import io.github.swagger2markup.spi.PathsDocumentExtension;
 import io.github.swagger2markup.utils.IOUtils;
@@ -30,11 +28,10 @@ import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.io.Reader;
 import java.net.URI;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Append Spring Rest docs generated snippets to Operations content.
@@ -167,21 +164,9 @@ public final class SpringRestDocsExtension extends PathsDocumentExtension {
         ContentExtension content = new ContentExtension(globalContext, context);
         URI snippetUri = operationSnippetUri(context, context.getOperation().get(), snippetName);
         logger.info("Processing Spring REST Docs snippet: {}", snippetUri.toString());
-        Optional<Reader> snippetContent = content.readContentUri(snippetUri);
-
-        if (snippetContent.isPresent()) {
-            try {
-                context.getMarkupDocBuilder().sectionTitleLevel(1 + levelOffset(context), title);
-                context.getMarkupDocBuilder().importMarkup(snippetContent.get(), extensionMarkupLanguage, levelOffset(context) + 1);
-            } catch (IOException e) {
-                throw new RuntimeException(String.format("Failed to process snippet URI : %s", snippetUri), e);
-            } finally {
-                try {
-                    snippetContent.get().close();
-                } catch (IOException e) {
-                    Throwables.propagate(e);
-                }
-            }
-        }
+        content.importContent(snippetUri, reader -> {
+            context.getMarkupDocBuilder().sectionTitleLevel(1 + levelOffset(context), title);
+            context.getMarkupDocBuilder().importMarkup(reader, extensionMarkupLanguage, levelOffset(context) + 1);
+        });
     }
 }

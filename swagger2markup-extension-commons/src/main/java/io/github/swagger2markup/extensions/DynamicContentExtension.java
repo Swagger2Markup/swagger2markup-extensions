@@ -16,13 +16,10 @@
 
 package io.github.swagger2markup.extensions;
 
-import com.google.common.base.Function;
-import com.google.common.base.Optional;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
-import io.github.swagger2markup.markup.builder.MarkupLanguage;
 import io.github.swagger2markup.Swagger2MarkupConverter;
+import io.github.swagger2markup.markup.builder.MarkupLanguage;
 import io.github.swagger2markup.spi.ContentContext;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -30,13 +27,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.io.Reader;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class DynamicContentExtension extends ContentExtension {
 
@@ -55,18 +52,13 @@ public class DynamicContentExtension extends ContentExtension {
      * @param levelOffset import markup level offset
      */
     public void extensionsSection(MarkupLanguage extensionMarkupLanguage, Path contentPath, final String prefix, int levelOffset) {
-        final Collection<String> filenameExtensions = Collections2.transform(globalContext.getConfig().getMarkupLanguage().getFileNameExtensions(), new Function<String, String>() {
-            public String apply(String input) {
-                return StringUtils.stripStart(input, ".");
-            }
-        });
+        final Collection<String> filenameExtensions = globalContext.getConfig().getMarkupLanguage().getFileNameExtensions().stream()
+                .map(fileExtension -> StringUtils.stripStart(fileExtension, "."))
+                .collect(Collectors.toList());
 
-        DirectoryStream.Filter<Path> filter = new DirectoryStream.Filter<Path>() {
-            @Override
-            public boolean accept(Path entry) throws IOException {
-                String fileName = entry.getFileName().toString();
-                return fileName.startsWith(prefix) && FilenameUtils.isExtension(fileName, filenameExtensions);
-            }
+        DirectoryStream.Filter<Path> filter = entry -> {
+            String fileName = entry.getFileName().toString();
+            return fileName.startsWith(prefix) && FilenameUtils.isExtension(fileName, filenameExtensions);
         };
 
         try (DirectoryStream<Path> extensionFiles = Files.newDirectoryStream(contentPath, filter)) {
@@ -76,23 +68,13 @@ public class DynamicContentExtension extends ContentExtension {
                 Collections.sort(extensions, Ordering.natural());
 
                 for (Path extension : extensions) {
-                    Optional<Reader> extensionContent = readContentPath(extension);
-
-                    if (extensionContent.isPresent()) {
-                        try {
-                            contentContext.getMarkupDocBuilder().importMarkup(extensionContent.get(), extensionMarkupLanguage, levelOffset);
-                        } catch (IOException e) {
-                            throw new RuntimeException(String.format("Failed to read extension file %s", extension), e);
-                        } finally {
-                            extensionContent.get().close();
-                        }
-                    }
+                    importContent(extension,
+                            (reader) -> contentContext.getMarkupDocBuilder().importMarkup(reader, extensionMarkupLanguage, levelOffset));
                 }
             }
         } catch (IOException e) {
             if (logger.isDebugEnabled())
                 logger.debug("Failed to read extension files from directory {}", contentPath);
-
         }
     }
 

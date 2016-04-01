@@ -16,7 +16,6 @@
 
 package io.github.swagger2markup.extensions;
 
-import com.google.common.base.Optional;
 import io.github.swagger2markup.Swagger2MarkupConverter;
 import io.github.swagger2markup.builder.Swagger2MarkupProperties;
 import io.github.swagger2markup.spi.DefinitionsDocumentExtension;
@@ -28,10 +27,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.io.Reader;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Add external schemas to content.<br>
@@ -158,23 +157,14 @@ public final class SchemaExtension extends DefinitionsDocumentExtension {
         ContentExtension contentExtension = new ContentExtension(globalContext, context);
         URI schemaUri = definitionSchemaUri(context, context.getDefinitionName().get(), schema);
         logger.info("Processing schema: {}", schemaUri.toString());
-        try {
-            Optional<Reader> extensionContent = contentExtension.readContentUri(schemaUri);
-
-            if (extensionContent.isPresent()) {
-                try {
-                    context.getMarkupDocBuilder().sectionTitleLevel(1 + levelOffset, schema.title);
-                    context.getMarkupDocBuilder().listing(org.apache.commons.io.IOUtils.toString(extensionContent.get()).trim(), schema.language);
-                } catch (IOException e) {
-                    throw new RuntimeException(String.format("Failed to read schema URI : %s", schemaUri), e);
-                } finally {
-                    extensionContent.get().close();
-                }
+        contentExtension.importContent(schemaUri, reader -> {
+            context.getMarkupDocBuilder().sectionTitleLevel(1 + levelOffset, schema.title);
+            try {
+                context.getMarkupDocBuilder().listing(org.apache.commons.io.IOUtils.toString(reader).trim(), schema.language);
+            } catch (IOException e) {
+                throw new RuntimeException(String.format("Failed to read schema URI : %s", schemaUri), e);
             }
-        } catch (IOException e) {
-            if (logger.isDebugEnabled())
-                logger.debug("Failed to read schema URI {}", schemaUri);
-        }
+        });
     }
 
     public static class SchemaMetadata {

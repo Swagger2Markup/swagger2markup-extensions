@@ -16,12 +16,11 @@
 
 package io.github.swagger2markup.extensions;
 
-import com.google.common.base.Optional;
-import io.github.swagger2markup.markup.builder.MarkupLanguage;
 import io.github.swagger2markup.Swagger2MarkupConverter;
 import io.github.swagger2markup.builder.Swagger2MarkupProperties;
-import io.github.swagger2markup.utils.IOUtils;
+import io.github.swagger2markup.markup.builder.MarkupLanguage;
 import io.github.swagger2markup.spi.PathsDocumentExtension;
+import io.github.swagger2markup.utils.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
@@ -29,6 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
 
 /**
  * Dynamically search for markup files in {@code contentPath} to append to Operations, with the format :<br>
@@ -69,7 +69,7 @@ public final class DynamicPathsDocumentExtension extends PathsDocumentExtension 
      */
     public DynamicPathsDocumentExtension(String extensionId, Path contentPath, MarkupLanguage extensionMarkupLanguage) {
         super();
-        Validate.notNull(extensionId);
+        Validate.notNull(extensionMarkupLanguage);
         Validate.notNull(contentPath);
         if(StringUtils.isNoneBlank(extensionId)) {
             this.extensionId = extensionId;
