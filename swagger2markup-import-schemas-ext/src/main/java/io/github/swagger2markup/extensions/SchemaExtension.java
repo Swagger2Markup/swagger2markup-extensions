@@ -125,6 +125,7 @@ public final class SchemaExtension extends DefinitionsDocumentExtension {
         if (schemaBaseUri != null) {
             switch (context.getPosition()) {
                 case DOCUMENT_BEFORE:
+                case DOCUMENT_AFTER:
                 case DOCUMENT_BEGIN:
                 case DOCUMENT_END:
                 case DEFINITION_BEGIN:
