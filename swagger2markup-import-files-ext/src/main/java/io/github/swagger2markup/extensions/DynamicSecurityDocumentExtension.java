@@ -17,7 +17,7 @@
 package io.github.swagger2markup.extensions;
 
 import io.github.swagger2markup.Swagger2MarkupConverter;
-import io.github.swagger2markup.builder.Swagger2MarkupProperties;
+import io.github.swagger2markup.Swagger2MarkupProperties;
 import io.github.swagger2markup.markup.builder.MarkupLanguage;
 import io.github.swagger2markup.spi.SecurityDocumentExtension;
 import io.github.swagger2markup.utils.IOUtils;
