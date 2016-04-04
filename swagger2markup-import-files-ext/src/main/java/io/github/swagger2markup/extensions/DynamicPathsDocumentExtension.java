@@ -33,6 +33,7 @@ import java.util.Optional;
 /**
  * Dynamically search for markup files in {@code contentPath} to append to Operations, with the format :<br>
  * - {@code document-before-*.<markup.ext>} : import before Paths document with levelOffset = 0<br>
+ * - {@code document-after-*.<markup.ext>} : import after Paths document with levelOffset = 0<br>
  * - {@code document-begin-*.<markup.ext>} : import just after Paths document main title with levelOffset = 1<br>
  * - {@code document-end-*.<markup.ext>} : import at the end of Paths document with levelOffset = 1<br>
  * - {@code operation-begin-*.<markup.ext>} : import just after each operation title with levelOffset = 2(GroupBy.AS_IS) | 3(GroupBy.TAGS)<br>
@@ -114,17 +115,12 @@ public final class DynamicPathsDocumentExtension extends PathsDocumentExtension 
             PathsDocumentExtension.Position position = context.getPosition();
             switch (position) {
                 case DOCUMENT_BEFORE:
-                    dynamicContent.extensionsSection(extensionMarkupLanguage, contentPath, contentPrefix(position), levelOffset(context));
-                    break;
+                case DOCUMENT_AFTER:
                 case DOCUMENT_BEGIN:
-                    dynamicContent.extensionsSection(extensionMarkupLanguage, contentPath, contentPrefix(position), levelOffset(context));
-                    break;
                 case DOCUMENT_END:
                     dynamicContent.extensionsSection(extensionMarkupLanguage, contentPath, contentPrefix(position), levelOffset(context));
                     break;
                 case OPERATION_BEGIN:
-                    dynamicContent.extensionsSection(extensionMarkupLanguage, contentPath.resolve(IOUtils.normalizeName(context.getOperation().get().getId())), contentPrefix(position), levelOffset(context));
-                    break;
                 case OPERATION_END:
                     dynamicContent.extensionsSection(extensionMarkupLanguage, contentPath.resolve(IOUtils.normalizeName(context.getOperation().get().getId())), contentPrefix(position), levelOffset(context));
                     break;

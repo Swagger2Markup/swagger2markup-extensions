@@ -33,6 +33,7 @@ import java.util.Optional;
 /**
  * Dynamically search for markup files in {@code contentPath} to append in Definitions, with the format :<br>
  * - {@code document-before-*.<markup.ext>} : import before Definitions document with levelOffset = 0<br>
+ * - {@code document-after-*.<markup.ext>} : import after Definitions document with levelOffset = 0<br>
  * - {@code document-begin-*.<markup.ext>} : import just after Definitions document main title with levelOffset = 1<br>
  * - {@code document-end-*.<markup.ext>} : import at the end of Definitions document with levelOffset = 1<br>
  * - {@code definition-begin-*.<markup.ext>} : import just after each definition title with levelOffset = 2<br>
@@ -114,17 +115,12 @@ public final class DynamicDefinitionsDocumentExtension extends DefinitionsDocume
             DynamicDefinitionsDocumentExtension.Position position = context.getPosition();
             switch (position) {
                 case DOCUMENT_BEFORE:
-                    dynamicContent.extensionsSection(extensionMarkupLanguage, contentPath, contentPrefix(position), levelOffset(context));
-                    break;
+                case DOCUMENT_AFTER:
                 case DOCUMENT_BEGIN:
-                    dynamicContent.extensionsSection(extensionMarkupLanguage, contentPath, contentPrefix(position), levelOffset(context));
-                    break;
                 case DOCUMENT_END:
                     dynamicContent.extensionsSection(extensionMarkupLanguage, contentPath, contentPrefix(position), levelOffset(context));
                     break;
                 case DEFINITION_BEGIN:
-                    dynamicContent.extensionsSection(extensionMarkupLanguage, contentPath.resolve(Paths.get(IOUtils.normalizeName(context.getDefinitionName().get()))), contentPrefix(position), levelOffset(context));
-                    break;
                 case DEFINITION_END:
                     dynamicContent.extensionsSection(extensionMarkupLanguage, contentPath.resolve(Paths.get(IOUtils.normalizeName(context.getDefinitionName().get()))), contentPrefix(position), levelOffset(context));
                     break;
