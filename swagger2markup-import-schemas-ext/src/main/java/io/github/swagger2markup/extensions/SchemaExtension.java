@@ -161,7 +161,7 @@ public final class SchemaExtension extends DefinitionsDocumentExtension {
         contentExtension.importContent(schemaUri, reader -> {
             context.getMarkupDocBuilder().sectionTitleLevel(1 + levelOffset, schema.title);
             try {
-                context.getMarkupDocBuilder().listing(org.apache.commons.io.IOUtils.toString(reader).trim(), schema.language);
+                context.getMarkupDocBuilder().listingBlock(org.apache.commons.io.IOUtils.toString(reader).trim(), schema.language);
             } catch (IOException e) {
                 throw new RuntimeException(String.format("Failed to read schema URI : %s", schemaUri), e);
             }
