@@ -40,7 +40,7 @@ public class DynamicDocumentExtensionTest {
     public void testSwagger2AsciiDocExtensions() throws IOException, URISyntaxException {
         //Given
         Path file = Paths.get(DynamicDocumentExtensionTest.class.getResource("/yaml/swagger_petstore.yaml").toURI());
-        Path outputDirectory = Paths.get("build/docs/asciidoc/generated");
+        Path outputDirectory = Paths.get("build/test/asciidoc/generated");
         FileUtils.deleteQuietly(outputDirectory.toFile());
 
         //When
@@ -70,7 +70,7 @@ public class DynamicDocumentExtensionTest {
     public void testSwagger2MarkdownExtensions() throws IOException, URISyntaxException {
         //Given
         Path file = Paths.get(DynamicDocumentExtensionTest.class.getResource("/yaml/swagger_petstore.yaml").toURI());
-        Path outputDirectory = Paths.get("build/docs/markdown/generated");
+        Path outputDirectory = Paths.get("build/test/markdown/generated");
         FileUtils.deleteQuietly(outputDirectory.toFile());
 
         //When

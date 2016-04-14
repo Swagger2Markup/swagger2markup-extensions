@@ -53,7 +53,7 @@ public class SpringRestDocsExtensionsTest {
     public void testSwagger2AsciiDocConversionWithSpringRestDocsExtension() throws IOException, URISyntaxException {
         //Given
         Path file = Paths.get(SpringRestDocsExtensionsTest.class.getResource("/yaml/swagger_petstore.yaml").toURI());
-        Path outputDirectory = Paths.get("build/docs/asciidoc/spring_rest_docs");
+        Path outputDirectory = Paths.get("build/test/asciidoc/spring_rest_docs");
         FileUtils.deleteQuietly(outputDirectory.toFile());
 
         //When
