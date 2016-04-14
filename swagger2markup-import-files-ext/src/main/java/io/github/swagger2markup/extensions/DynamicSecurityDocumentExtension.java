@@ -114,9 +114,11 @@ public final class DynamicSecurityDocumentExtension extends SecurityDocumentExte
                 case DOCUMENT_END:
                     dynamicContent.extensionsSection(extensionMarkupLanguage, contentPath, contentPrefix(position), levelOffset(context));
                     break;
-                case DEFINITION_BEGIN:
-                case DEFINITION_END:
-                    dynamicContent.extensionsSection(extensionMarkupLanguage, contentPath.resolve(IOUtils.normalizeName(context.getDefinitionName().get())), contentPrefix(position), levelOffset(context));
+                case SECURITY_SCHEME_BEFORE:
+                case SECURITY_SCHEME_BEGIN:
+                case SECURITY_SCHEME_END:
+                case SECURITY_SCHEME_AFTER:
+                    dynamicContent.extensionsSection(extensionMarkupLanguage, contentPath.resolve(IOUtils.normalizeName(context.getSecuritySchemeName().get())), contentPrefix(position), levelOffset(context));
                     break;
             }
         }

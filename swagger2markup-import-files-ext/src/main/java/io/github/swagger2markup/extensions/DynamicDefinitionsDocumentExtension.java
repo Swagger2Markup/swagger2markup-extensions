@@ -114,8 +114,10 @@ public final class DynamicDefinitionsDocumentExtension extends DefinitionsDocume
                 case DOCUMENT_END:
                     dynamicContent.extensionsSection(extensionMarkupLanguage, contentPath, contentPrefix(position), levelOffset(context));
                     break;
+                case DEFINITION_BEFORE:
                 case DEFINITION_BEGIN:
                 case DEFINITION_END:
+                case DEFINITION_AFTER:
                     dynamicContent.extensionsSection(extensionMarkupLanguage, contentPath.resolve(Paths.get(IOUtils.normalizeName(context.getDefinitionName().get()))), contentPrefix(position), levelOffset(context));
                     break;
             }
