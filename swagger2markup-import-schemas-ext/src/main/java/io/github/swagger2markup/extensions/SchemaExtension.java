@@ -124,19 +124,11 @@ public final class SchemaExtension extends DefinitionsDocumentExtension {
 
         if (schemaBaseUri != null) {
             switch (context.getPosition()) {
-                case DOCUMENT_BEFORE:
-                case DOCUMENT_AFTER:
-                case DOCUMENT_BEGIN:
-                case DOCUMENT_END:
-                case DEFINITION_BEGIN:
-                    break;
                 case DEFINITION_END:
                     for (SchemaMetadata schema : DEFAULT_SCHEMAS) {
                         schemaSection(context, schema, levelOffset(context));
                     }
                     break;
-                default:
-                    throw new RuntimeException(String.format("Unknown position '%s'", context.getPosition()));
             }
         }
     }
