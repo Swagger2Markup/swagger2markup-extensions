@@ -31,13 +31,7 @@ import java.nio.file.Paths;
 import java.util.Optional;
 
 /**
- * Dynamically search for markup files in {@code contentPath} to append to Operations, with the format :<br>
- * - {@code document-before-*.<markup.ext>} : import before Paths document with levelOffset = 0<br>
- * - {@code document-after-*.<markup.ext>} : import after Paths document with levelOffset = 0<br>
- * - {@code document-begin-*.<markup.ext>} : import just after Paths document main title with levelOffset = 1<br>
- * - {@code document-end-*.<markup.ext>} : import at the end of Paths document with levelOffset = 1<br>
- * - {@code operation-begin-*.<markup.ext>} : import just after each operation title with levelOffset = 2(GroupBy.AS_IS) | 3(GroupBy.TAGS)<br>
- * - {@code operation-end-*.<markup.ext>} : import at the end of each operation with levelOffset = 2(GroupBy.AS_IS) | 3(GroupBy.TAGS)<br>
+ * Dynamically search for markup files in {@code contentPath} to append to Paths document.
  * <p>
  * Markup files are appended in the natural order of their names, for each category.
  */
@@ -120,12 +114,28 @@ public final class DynamicPathsDocumentExtension extends PathsDocumentExtension 
                 case DOCUMENT_END:
                     dynamicContent.extensionsSection(extensionMarkupLanguage, contentPath, contentPrefix(position), levelOffset(context));
                     break;
+                case OPERATION_BEFORE:
                 case OPERATION_BEGIN:
                 case OPERATION_END:
+                case OPERATION_AFTER:
+                case OPERATION_DESCRIPTION_BEFORE:
+                case OPERATION_DESCRIPTION_AFTER:
+                case OPERATION_PARAMETERS_BEFORE:
+                case OPERATION_PARAMETERS_AFTER:
+                case OPERATION_RESPONSES_BEFORE:
+                case OPERATION_RESPONSES_AFTER:
+                case OPERATION_SECURITY_BEFORE:
+                case OPERATION_SECURITY_AFTER:
+                case OPERATION_DESCRIPTION_BEGIN:
+                case OPERATION_DESCRIPTION_END:
+                case OPERATION_PARAMETERS_BEGIN:
+                case OPERATION_PARAMETERS_END:
+                case OPERATION_RESPONSES_BEGIN:
+                case OPERATION_RESPONSES_END:
+                case OPERATION_SECURITY_BEGIN:
+                case OPERATION_SECURITY_END:
                     dynamicContent.extensionsSection(extensionMarkupLanguage, contentPath.resolve(IOUtils.normalizeName(context.getOperation().get().getId())), contentPrefix(position), levelOffset(context));
                     break;
-                default:
-                    throw new RuntimeException(String.format("Unknown position '%s'", position));
             }
         }
     }
