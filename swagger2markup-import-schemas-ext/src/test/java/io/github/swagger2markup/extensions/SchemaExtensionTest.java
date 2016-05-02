@@ -40,7 +40,7 @@ public class SchemaExtensionTest {
     public void testSwagger2AsciiDocSchemaExtension() throws IOException, URISyntaxException {
         //Given
         Path file = Paths.get(SchemaExtensionTest.class.getResource("/yaml/swagger_petstore.yaml").toURI());
-        Path outputDirectory = Paths.get("build/docs/asciidoc/generated");
+        Path outputDirectory = Paths.get("build/test/asciidoc/generated");
         FileUtils.deleteQuietly(outputDirectory.toFile());
 
         //When

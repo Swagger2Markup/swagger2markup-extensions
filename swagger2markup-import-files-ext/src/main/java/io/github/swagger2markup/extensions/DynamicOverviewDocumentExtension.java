@@ -30,11 +30,7 @@ import java.nio.file.Paths;
 import java.util.Optional;
 
 /**
- * Dynamically search for markup files in {@code contentPath} to append to Overview, with the format :<br>
- * - {@code document-before-*.<markup.ext>} : import before Overview document with levelOffset = 0<br>
- * - {@code document-after-*.<markup.ext>} : import after Overview document with levelOffset = 0<br>
- * - {@code document-begin-*.<markup.ext>} : import just after Overview document main title with levelOffset = 1<br>
- * - {@code document-end-*.<markup.ext>} : import at the end of Overview document with levelOffset = 1<br>
+ * Dynamically search for markup files in {@code contentPath} to append to Overview document.
  * <p>
  * Markup files are appended in the natural order of their names, for each category.
  */
@@ -117,8 +113,6 @@ public final class DynamicOverviewDocumentExtension extends OverviewDocumentExte
                 case DOCUMENT_END:
                     dynamicContent.extensionsSection(extensionMarkupLanguage, contentPath, contentPrefix(position), levelOffset(context));
                     break;
-                default:
-                    throw new RuntimeException(String.format("Unknown position '%s'", position));
             }
         }
     }
