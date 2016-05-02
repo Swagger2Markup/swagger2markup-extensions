@@ -61,7 +61,7 @@ publishing {
                     it.scope*.value = 'compile'
                 }
 
-                root.appendNode('name', 'swagger2markup')
+                root.appendNode('name', 'swagger2markup-extensions')
                 root.appendNode('packaging', 'jar')
                 root.appendNode('url', 'https://github.com/Swagger2Markup/swagger2markup')
                 root.appendNode('description', 'A Swagger to Markup (AsciiDoc and Markdown) converter.')
@@ -93,8 +93,9 @@ bintray {
     publish = true //If version should be auto published after an upload
     publications = ['mavenJava']
     pkg {
-        repo = 'maven'
-        name = 'swagger2markup'
+        repo = 'Maven'
+        name = 'swagger2markup-extensions'
+        userOrg = 'swagger2markup'
         websiteUrl = 'https://github.com/Swagger2Markup/swagger2markup'
         issueTrackerUrl = 'https://github.com/Swagger2Markup/swagger2markup/issues'
         vcsUrl = 'https://github.com/Swagger2Markup/swagger2markup.git'

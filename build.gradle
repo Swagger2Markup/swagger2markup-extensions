@@ -5,14 +5,14 @@ buildscript {
     }
     dependencies {
         classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.0.1'
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.2'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.6'
         classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.0.0"
     }
 }
 
 subprojects {
     description = 'Swagger2Markup extensions.'
-    version = '1.0.0-SNAPSHOT'
+    version = '1.0.0'
     group = 'io.github.swagger2markup'
 
     apply plugin: 'java'
@@ -20,7 +20,7 @@ subprojects {
 
     ext {
         junit = "4.11"
-        swagger2markup = "1.0.0-SNAPSHOT"
+        swagger2markup = "1.0.0"
     }
 
     tasks.withType(JavaCompile) {
