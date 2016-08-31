@@ -12,7 +12,7 @@ buildscript {
 
 subprojects {
     description = 'Swagger2Markup extensions.'
-    version = '1.0.0'
+    version = '1.0.1-SNAPSHOT'
     group = 'io.github.swagger2markup'
 
     apply plugin: 'java'

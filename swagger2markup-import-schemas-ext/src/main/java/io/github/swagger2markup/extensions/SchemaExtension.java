@@ -73,7 +73,6 @@ public final class SchemaExtension extends DefinitionsDocumentExtension {
      */
     public SchemaExtension(String extensionId, URI schemaBaseUri) {
         super();
-        Validate.notNull(extensionId);
         Validate.notNull(schemaBaseUri);
         if(StringUtils.isNoneBlank(extensionId)) {
             this.extensionId = extensionId;
