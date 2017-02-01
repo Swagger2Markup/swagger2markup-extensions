@@ -47,11 +47,11 @@ public class DynamicContentExtension extends ContentExtension {
      * Builds extension sections
      *
      * @param extensionMarkupLanguage the MarkupLanguage of the snippets content
-     * @param contentPath the path where the content files reside
+     * @param contentPaths the path(s) where the content files reside
      * @param prefix      extension file prefix
      * @param levelOffset import markup level offset
      */
-    public void extensionsSection(MarkupLanguage extensionMarkupLanguage, Path contentPath, final String prefix, int levelOffset) {
+    public void extensionsSection(MarkupLanguage extensionMarkupLanguage, List<Path> contentPaths, final String prefix, int levelOffset) {
         final Collection<String> filenameExtensions = globalContext.getConfig().getMarkupLanguage().getFileNameExtensions().stream()
                 .map(fileExtension -> StringUtils.stripStart(fileExtension, "."))
                 .collect(Collectors.toList());
@@ -61,20 +61,22 @@ public class DynamicContentExtension extends ContentExtension {
             return fileName.startsWith(prefix) && FilenameUtils.isExtension(fileName, filenameExtensions);
         };
 
-        try (DirectoryStream<Path> extensionFiles = Files.newDirectoryStream(contentPath, filter)) {
-
-            if (extensionFiles != null) {
-                List<Path> extensions = Lists.newArrayList(extensionFiles);
-                Collections.sort(extensions, Ordering.natural());
-
-                for (Path extension : extensions) {
-                    importContent(extension,
-                            (reader) -> contentContext.getMarkupDocBuilder().importMarkup(reader, extensionMarkupLanguage, levelOffset));
-                }
-            }
-        } catch (IOException e) {
-            if (logger.isDebugEnabled())
-                logger.debug("Failed to read extension files from directory {}", contentPath);
+        for (Path currentPath : contentPaths) {
+	        try (DirectoryStream<Path> extensionFiles = Files.newDirectoryStream(currentPath, filter)) {
+	
+	            if (extensionFiles != null) {
+	                List<Path> extensions = Lists.newArrayList(extensionFiles);
+	                Collections.sort(extensions, Ordering.natural());
+	
+	                for (Path extension : extensions) {
+	                    importContent(extension,
+	                            (reader) -> contentContext.getMarkupDocBuilder().importMarkup(reader, extensionMarkupLanguage, levelOffset));
+	                }
+	            }
+	        } catch (IOException e) {
+	            if (logger.isDebugEnabled())
+	                logger.debug("Failed to read extension files from directory {}", currentPath);
+	        }
         }
     }
 

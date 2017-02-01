@@ -20,6 +20,7 @@ import io.github.swagger2markup.Swagger2MarkupConverter;
 import io.github.swagger2markup.Swagger2MarkupProperties;
 import io.github.swagger2markup.markup.builder.MarkupLanguage;
 import io.github.swagger2markup.spi.OverviewDocumentExtension;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
@@ -27,6 +28,8 @@ import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -38,7 +41,7 @@ public final class DynamicOverviewDocumentExtension extends OverviewDocumentExte
 
     private static final Logger logger = LoggerFactory.getLogger(DynamicOverviewDocumentExtension.class);
 
-    protected Path contentPath;
+    protected List<Path> contentPath;
 
     private static final String DEFAULT_EXTENSION_ID = "dynamicOverview";
     private static final String PROPERTY_CONTENT_PATH = "contentPath";
@@ -51,7 +54,7 @@ public final class DynamicOverviewDocumentExtension extends OverviewDocumentExte
      * @param contentPath the base Path where the content is stored
      * @param extensionMarkupLanguage the MarkupLanguage of the extension content
      */
-    public DynamicOverviewDocumentExtension(Path contentPath, MarkupLanguage extensionMarkupLanguage) {
+    public DynamicOverviewDocumentExtension(List<Path> contentPath, MarkupLanguage extensionMarkupLanguage) {
         this(null, contentPath, extensionMarkupLanguage);
     }
 
@@ -61,7 +64,7 @@ public final class DynamicOverviewDocumentExtension extends OverviewDocumentExte
      * @param contentPath the base Path where the content is stored
      * @param extensionMarkupLanguage the MarkupLanguage of the extension content
      */
-    public DynamicOverviewDocumentExtension(String extensionId, Path contentPath, MarkupLanguage extensionMarkupLanguage) {
+    public DynamicOverviewDocumentExtension(String extensionId, List<Path> contentPath, MarkupLanguage extensionMarkupLanguage) {
         super();
         Validate.notNull(extensionMarkupLanguage);
         Validate.notNull(contentPath);
@@ -79,7 +82,7 @@ public final class DynamicOverviewDocumentExtension extends OverviewDocumentExte
     @Override
     public void init(Swagger2MarkupConverter.Context globalContext) {
         Swagger2MarkupProperties extensionsProperties = globalContext.getConfig().getExtensionsProperties();
-        Optional<Path> contentPathProperty = extensionsProperties.getPath(extensionId + "." + PROPERTY_CONTENT_PATH);
+        Optional<List<Path>> contentPathProperty = extensionsProperties.getPathList(extensionId + "." + PROPERTY_CONTENT_PATH);
         if (contentPathProperty.isPresent()) {
             contentPath = contentPathProperty.get();
         }
@@ -89,7 +92,8 @@ public final class DynamicOverviewDocumentExtension extends OverviewDocumentExte
                     if (logger.isWarnEnabled())
                         logger.warn("Disable > DynamicOverviewContentExtension > Can't set default contentPath from swaggerLocation. You have to explicitly configure the content path.");
                 } else {
-                    contentPath = Paths.get(globalContext.getSwaggerLocation()).getParent();
+                	contentPath = new ArrayList<Path>();
+                	contentPath.add(Paths.get(globalContext.getSwaggerLocation()).getParent());
                 }
             }
         }
