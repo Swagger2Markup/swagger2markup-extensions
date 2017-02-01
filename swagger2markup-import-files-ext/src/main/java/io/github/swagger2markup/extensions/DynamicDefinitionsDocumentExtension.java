@@ -94,8 +94,8 @@ public final class DynamicDefinitionsDocumentExtension extends DefinitionsDocume
                     if (logger.isWarnEnabled())
                         logger.warn("Disable DynamicDefinitionsContentExtension > Can't set default contentPath from swaggerLocation. You have to explicitly configure the content path.");
                 } else {
-                	contentPath = new ArrayList<Path>();
-                	contentPath.add(Paths.get(globalContext.getSwaggerLocation()).getParent());
+                    contentPath = new ArrayList<Path>();
+                    contentPath.add(Paths.get(globalContext.getSwaggerLocation()).getParent());
                 }
             }
         }
@@ -113,21 +113,21 @@ public final class DynamicDefinitionsDocumentExtension extends DefinitionsDocume
             DynamicContentExtension dynamicContent = new DynamicContentExtension(globalContext, context);
             DynamicDefinitionsDocumentExtension.Position position = context.getPosition();
             switch (position) {
-                case DOCUMENT_BEFORE:
-                case DOCUMENT_AFTER:
-                case DOCUMENT_BEGIN:
-                case DOCUMENT_END:
-                    dynamicContent.extensionsSection(extensionMarkupLanguage, contentPath, contentPrefix(position), levelOffset(context));
-                    break;
-                case DEFINITION_BEFORE:
-                case DEFINITION_BEGIN:
-                case DEFINITION_END:
-                case DEFINITION_AFTER:
-                	List<Path> resolvedPaths = contentPath.stream().map(
-                			p -> p.resolve(Paths.get(IOUtils.normalizeName(context.getDefinitionName().get()))))
-                			.collect(Collectors.toList());
-                    dynamicContent.extensionsSection(extensionMarkupLanguage, resolvedPaths, contentPrefix(position), levelOffset(context));
-                    break;
+            case DOCUMENT_BEFORE:
+            case DOCUMENT_AFTER:
+            case DOCUMENT_BEGIN:
+            case DOCUMENT_END:
+                dynamicContent.extensionsSection(extensionMarkupLanguage, contentPath, contentPrefix(position), levelOffset(context));
+                break;
+            case DEFINITION_BEFORE:
+            case DEFINITION_BEGIN:
+            case DEFINITION_END:
+            case DEFINITION_AFTER:
+                List<Path> resolvedPaths = contentPath.stream().map(
+                        p -> p.resolve(Paths.get(IOUtils.normalizeName(context.getDefinitionName().get()))))
+                        .collect(Collectors.toList());
+                dynamicContent.extensionsSection(extensionMarkupLanguage, resolvedPaths, contentPrefix(position), levelOffset(context));
+                break;
             }
         }
     }

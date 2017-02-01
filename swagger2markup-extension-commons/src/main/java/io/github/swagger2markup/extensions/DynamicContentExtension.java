@@ -62,21 +62,21 @@ public class DynamicContentExtension extends ContentExtension {
         };
 
         for (Path currentPath : contentPaths) {
-	        try (DirectoryStream<Path> extensionFiles = Files.newDirectoryStream(currentPath, filter)) {
-	
-	            if (extensionFiles != null) {
-	                List<Path> extensions = Lists.newArrayList(extensionFiles);
-	                Collections.sort(extensions, Ordering.natural());
-	
-	                for (Path extension : extensions) {
-	                    importContent(extension,
-	                            (reader) -> contentContext.getMarkupDocBuilder().importMarkup(reader, extensionMarkupLanguage, levelOffset));
-	                }
-	            }
-	        } catch (IOException e) {
-	            if (logger.isDebugEnabled())
-	                logger.debug("Failed to read extension files from directory {}", currentPath);
-	        }
+            try (DirectoryStream<Path> extensionFiles = Files.newDirectoryStream(currentPath, filter)) {
+
+                if (extensionFiles != null) {
+                    List<Path> extensions = Lists.newArrayList(extensionFiles);
+                    Collections.sort(extensions, Ordering.natural());
+
+                    for (Path extension : extensions) {
+                        importContent(extension,
+                                (reader) -> contentContext.getMarkupDocBuilder().importMarkup(reader, extensionMarkupLanguage, levelOffset));
+                    }
+                }
+            } catch (IOException e) {
+                if (logger.isDebugEnabled())
+                    logger.debug("Failed to read extension files from directory {}", currentPath);
+            }
         }
     }
 

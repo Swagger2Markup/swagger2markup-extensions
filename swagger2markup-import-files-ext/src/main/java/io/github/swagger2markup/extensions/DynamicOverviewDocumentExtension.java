@@ -92,8 +92,8 @@ public final class DynamicOverviewDocumentExtension extends OverviewDocumentExte
                     if (logger.isWarnEnabled())
                         logger.warn("Disable > DynamicOverviewContentExtension > Can't set default contentPath from swaggerLocation. You have to explicitly configure the content path.");
                 } else {
-                	contentPath = new ArrayList<Path>();
-                	contentPath.add(Paths.get(globalContext.getSwaggerLocation()).getParent());
+                    contentPath = new ArrayList<Path>();
+                    contentPath.add(Paths.get(globalContext.getSwaggerLocation()).getParent());
                 }
             }
         }
@@ -111,12 +111,12 @@ public final class DynamicOverviewDocumentExtension extends OverviewDocumentExte
             DynamicContentExtension dynamicContent = new DynamicContentExtension(globalContext, context);
             OverviewDocumentExtension.Position position = context.getPosition();
             switch (position) {
-                case DOCUMENT_BEFORE:
-                case DOCUMENT_AFTER:    
-                case DOCUMENT_BEGIN:
-                case DOCUMENT_END:
-                    dynamicContent.extensionsSection(extensionMarkupLanguage, contentPath, contentPrefix(position), levelOffset(context));
-                    break;
+            case DOCUMENT_BEFORE:
+            case DOCUMENT_AFTER:    
+            case DOCUMENT_BEGIN:
+            case DOCUMENT_END:
+                dynamicContent.extensionsSection(extensionMarkupLanguage, contentPath, contentPrefix(position), levelOffset(context));
+                break;
             }
         }
     }

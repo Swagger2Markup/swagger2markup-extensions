@@ -94,8 +94,8 @@ public final class DynamicSecurityDocumentExtension extends SecurityDocumentExte
                     if (logger.isWarnEnabled())
                         logger.warn("Disable > DynamicSecurityContentExtension > Can't set default contentPath from swaggerLocation. You have to explicitly configure the content path.");
                 } else {
-                	contentPath = new ArrayList<Path>();
-                	contentPath.add(Paths.get(globalContext.getSwaggerLocation()).getParent());
+                    contentPath = new ArrayList<Path>();
+                    contentPath.add(Paths.get(globalContext.getSwaggerLocation()).getParent());
                 }
             }
         }
@@ -113,21 +113,21 @@ public final class DynamicSecurityDocumentExtension extends SecurityDocumentExte
             DynamicContentExtension dynamicContent = new DynamicContentExtension(globalContext, context);
             SecurityDocumentExtension.Position position = context.getPosition();
             switch (position) {
-                case DOCUMENT_BEFORE:
-                case DOCUMENT_AFTER:
-                case DOCUMENT_BEGIN:
-                case DOCUMENT_END:
-                    dynamicContent.extensionsSection(extensionMarkupLanguage, contentPath, contentPrefix(position), levelOffset(context));
-                    break;
-                case SECURITY_SCHEME_BEFORE:
-                case SECURITY_SCHEME_BEGIN:
-                case SECURITY_SCHEME_END:
-                case SECURITY_SCHEME_AFTER:
-                	List<Path> resolvedPaths = contentPath.stream().map(
-                			p -> p.resolve(IOUtils.normalizeName(context.getSecuritySchemeName().get())))
-                			.collect(Collectors.toList());
-                    dynamicContent.extensionsSection(extensionMarkupLanguage, resolvedPaths, contentPrefix(position), levelOffset(context));
-                    break;
+            case DOCUMENT_BEFORE:
+            case DOCUMENT_AFTER:
+            case DOCUMENT_BEGIN:
+            case DOCUMENT_END:
+                dynamicContent.extensionsSection(extensionMarkupLanguage, contentPath, contentPrefix(position), levelOffset(context));
+                break;
+            case SECURITY_SCHEME_BEFORE:
+            case SECURITY_SCHEME_BEGIN:
+            case SECURITY_SCHEME_END:
+            case SECURITY_SCHEME_AFTER:
+                List<Path> resolvedPaths = contentPath.stream().map(
+                        p -> p.resolve(IOUtils.normalizeName(context.getSecuritySchemeName().get())))
+                        .collect(Collectors.toList());
+                dynamicContent.extensionsSection(extensionMarkupLanguage, resolvedPaths, contentPrefix(position), levelOffset(context));
+                break;
             }
         }
     }

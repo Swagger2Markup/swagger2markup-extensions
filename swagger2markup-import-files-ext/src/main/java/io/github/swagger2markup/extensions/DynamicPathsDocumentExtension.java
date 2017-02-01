@@ -94,8 +94,8 @@ public final class DynamicPathsDocumentExtension extends PathsDocumentExtension 
                     if (logger.isWarnEnabled())
                         logger.warn("Disable DynamicOperationsContentExtension > Can't set default contentPath from swaggerLocation. You have to explicitly configure the content path.");
                 } else {
-                	contentPath = new ArrayList<Path>();
-                	contentPath.add(Paths.get(globalContext.getSwaggerLocation()).getParent());
+                    contentPath = new ArrayList<Path>();
+                    contentPath.add(Paths.get(globalContext.getSwaggerLocation()).getParent());
                 }
             }
         }
@@ -113,37 +113,37 @@ public final class DynamicPathsDocumentExtension extends PathsDocumentExtension 
             DynamicContentExtension dynamicContent = new DynamicContentExtension(globalContext, context);
             PathsDocumentExtension.Position position = context.getPosition();
             switch (position) {
-                case DOCUMENT_BEFORE:
-                case DOCUMENT_AFTER:
-                case DOCUMENT_BEGIN:
-                case DOCUMENT_END:
-                    dynamicContent.extensionsSection(extensionMarkupLanguage, contentPath, contentPrefix(position), levelOffset(context));
-                    break;
-                case OPERATION_BEFORE:
-                case OPERATION_BEGIN:
-                case OPERATION_END:
-                case OPERATION_AFTER:
-                case OPERATION_DESCRIPTION_BEFORE:
-                case OPERATION_DESCRIPTION_AFTER:
-                case OPERATION_PARAMETERS_BEFORE:
-                case OPERATION_PARAMETERS_AFTER:
-                case OPERATION_RESPONSES_BEFORE:
-                case OPERATION_RESPONSES_AFTER:
-                case OPERATION_SECURITY_BEFORE:
-                case OPERATION_SECURITY_AFTER:
-                case OPERATION_DESCRIPTION_BEGIN:
-                case OPERATION_DESCRIPTION_END:
-                case OPERATION_PARAMETERS_BEGIN:
-                case OPERATION_PARAMETERS_END:
-                case OPERATION_RESPONSES_BEGIN:
-                case OPERATION_RESPONSES_END:
-                case OPERATION_SECURITY_BEGIN:
-                case OPERATION_SECURITY_END:
-                	List<Path> resolvedPaths = contentPath.stream().map(
-                			p -> p.resolve(IOUtils.normalizeName(context.getOperation().get().getId())))
-                			.collect(Collectors.toList());
-                    dynamicContent.extensionsSection(extensionMarkupLanguage, resolvedPaths, contentPrefix(position), levelOffset(context));
-                    break;
+            case DOCUMENT_BEFORE:
+            case DOCUMENT_AFTER:
+            case DOCUMENT_BEGIN:
+            case DOCUMENT_END:
+                dynamicContent.extensionsSection(extensionMarkupLanguage, contentPath, contentPrefix(position), levelOffset(context));
+                break;
+            case OPERATION_BEFORE:
+            case OPERATION_BEGIN:
+            case OPERATION_END:
+            case OPERATION_AFTER:
+            case OPERATION_DESCRIPTION_BEFORE:
+            case OPERATION_DESCRIPTION_AFTER:
+            case OPERATION_PARAMETERS_BEFORE:
+            case OPERATION_PARAMETERS_AFTER:
+            case OPERATION_RESPONSES_BEFORE:
+            case OPERATION_RESPONSES_AFTER:
+            case OPERATION_SECURITY_BEFORE:
+            case OPERATION_SECURITY_AFTER:
+            case OPERATION_DESCRIPTION_BEGIN:
+            case OPERATION_DESCRIPTION_END:
+            case OPERATION_PARAMETERS_BEGIN:
+            case OPERATION_PARAMETERS_END:
+            case OPERATION_RESPONSES_BEGIN:
+            case OPERATION_RESPONSES_END:
+            case OPERATION_SECURITY_BEGIN:
+            case OPERATION_SECURITY_END:
+                List<Path> resolvedPaths = contentPath.stream().map(
+                        p -> p.resolve(IOUtils.normalizeName(context.getOperation().get().getId())))
+                        .collect(Collectors.toList());
+                dynamicContent.extensionsSection(extensionMarkupLanguage, resolvedPaths, contentPrefix(position), levelOffset(context));
+                break;
             }
         }
     }
