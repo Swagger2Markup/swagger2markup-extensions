@@ -82,21 +82,17 @@ public final class DynamicOverviewDocumentExtension extends OverviewDocumentExte
     @Override
     public void init(Swagger2MarkupConverter.Context globalContext) {
         Swagger2MarkupProperties extensionsProperties = globalContext.getConfig().getExtensionsProperties();
-        Optional<List<Path>> contentPathProperty = extensionsProperties.getPathList(extensionId + "." + PROPERTY_CONTENT_PATH);
-        if (contentPathProperty.isPresent()) {
-            contentPath = contentPathProperty.get();
-        }
-        else {
-            if (contentPath == null) {
-                if (globalContext.getSwaggerLocation() == null || !globalContext.getSwaggerLocation().getScheme().equals("file")) {
-                    if (logger.isWarnEnabled())
-                        logger.warn("Disable > DynamicOverviewContentExtension > Can't set default contentPath from swaggerLocation. You have to explicitly configure the content path.");
-                } else {
-                    contentPath = new ArrayList<Path>();
-                    contentPath.add(Paths.get(globalContext.getSwaggerLocation()).getParent());
-                }
+        contentPath = extensionsProperties.getPathList(extensionId + "." + PROPERTY_CONTENT_PATH);
+
+        if (contentPath.isEmpty()) {
+            if (globalContext.getSwaggerLocation() == null || !globalContext.getSwaggerLocation().getScheme().equals("file")) {
+                if (logger.isWarnEnabled())
+                    logger.warn("Disable > DynamicOverviewContentExtension > Can't set default contentPath from swaggerLocation. You have to explicitly configure the content path.");
+            } else {
+                contentPath.add(Paths.get(globalContext.getSwaggerLocation()).getParent());
             }
         }
+        
         Optional<MarkupLanguage> extensionMarkupLanguageProperty = extensionsProperties.getMarkupLanguage(extensionId + "." + PROPERTY_MARKUP_LANGUAGE);
         if (extensionMarkupLanguageProperty.isPresent()) {
             extensionMarkupLanguage = extensionMarkupLanguageProperty.get();
