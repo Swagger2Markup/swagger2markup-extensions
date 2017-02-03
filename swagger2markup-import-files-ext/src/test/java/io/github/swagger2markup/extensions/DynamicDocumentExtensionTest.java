@@ -96,4 +96,65 @@ public class DynamicDocumentExtensionTest {
                 "Pet extension");
 
     }
+    
+    @Test
+    public void testSwagger2AsciiDocExtensionsMultiContentFolders() throws IOException, URISyntaxException {
+        //Given
+        Path file = Paths.get(DynamicDocumentExtensionTest.class.getResource("/yaml/swagger_petstore.yaml").toURI());
+        Path outputDirectory = Paths.get("build/test/asciidoc/generated");
+        FileUtils.deleteQuietly(outputDirectory.toFile());
+
+        //When
+        Properties properties = new Properties();
+        properties.load(DynamicDocumentExtensionTest.class.getResourceAsStream("/config/asciidoc/config2.properties"));
+        Swagger2MarkupConfig config = new Swagger2MarkupConfigBuilder(properties)
+                .build();
+        Swagger2MarkupExtensionRegistry registry = new Swagger2MarkupExtensionRegistryBuilder()
+                //.withDefinitionsDocumentExtension(new DynamicDefinitionsDocumentExtension(Paths.get("src/test/resources/docs/asciidoc/extensions")))
+                //.withPathsDocumentExtension(new DynamicPathsDocumentExtension(Paths.get("src/test/resources/docs/asciidoc/extensions")))
+                .build();
+        Swagger2MarkupConverter.from(file)
+                .withConfig(config)
+                .withExtensionRegistry(registry)
+                .build()
+                .toFolder(outputDirectory);
+
+        //Then
+        assertThat(new String(Files.readAllBytes(outputDirectory.resolve("paths.adoc")))).contains(
+                "Pet update request extension").contains("Pet update request extension 2");
+        assertThat(new String(Files.readAllBytes(outputDirectory.resolve("definitions.adoc")))).contains(
+                "Pet extension").contains("Pet extension 2");
+
+    }
+    
+    @Test
+    public void testSwagger2MarkdownExtensionsMultiContentFolders() throws IOException, URISyntaxException {
+        //Given
+        Path file = Paths.get(DynamicDocumentExtensionTest.class.getResource("/yaml/swagger_petstore.yaml").toURI());
+        Path outputDirectory = Paths.get("build/test/markdown/generated");
+        FileUtils.deleteQuietly(outputDirectory.toFile());
+
+        //When
+        Properties properties = new Properties();
+        properties.load(DynamicDocumentExtensionTest.class.getResourceAsStream("/config/markdown/config2.properties"));
+        Swagger2MarkupConfig config = new Swagger2MarkupConfigBuilder(properties)
+                .withMarkupLanguage(MarkupLanguage.MARKDOWN)
+                .build();
+        Swagger2MarkupExtensionRegistry registry = new Swagger2MarkupExtensionRegistryBuilder()
+                //.withDefinitionsDocumentExtension(new DynamicDefinitionsDocumentExtension(Paths.get("src/test/resources/docs/markdown/extensions")))
+                //.withPathsDocumentExtension(new DynamicPathsDocumentExtension(Paths.get("src/test/resources/docs/markdown/extensions")))
+                .build();
+        Swagger2MarkupConverter.from(file)
+                .withConfig(config)
+                .withExtensionRegistry(registry)
+                .build()
+                .toFolder(outputDirectory);
+
+        //Then
+        assertThat(new String(Files.readAllBytes(outputDirectory.resolve("paths.md")))).contains(
+                "Pet update request extension").contains("Pet update request extension 2");
+        assertThat(new String(Files.readAllBytes(outputDirectory.resolve("definitions.md")))).contains(
+                "Pet extension").contains("Pet extension 2");
+
+    }
 }
