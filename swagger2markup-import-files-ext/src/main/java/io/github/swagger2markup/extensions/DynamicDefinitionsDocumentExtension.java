@@ -21,6 +21,7 @@ import io.github.swagger2markup.Swagger2MarkupProperties;
 import io.github.swagger2markup.markup.builder.MarkupLanguage;
 import io.github.swagger2markup.spi.DefinitionsDocumentExtension;
 import io.github.swagger2markup.utils.IOUtils;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
@@ -28,7 +29,10 @@ import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Dynamically search for markup files in {@code contentPath} to append in Definitions document.
@@ -39,7 +43,7 @@ public final class DynamicDefinitionsDocumentExtension extends DefinitionsDocume
 
     private static final Logger logger = LoggerFactory.getLogger(DynamicDefinitionsDocumentExtension.class);
 
-    protected Path contentPath;
+    protected List<Path> contentPath;
 
     private static final String PROPERTY_CONTENT_PATH = "contentPath";
     private static final String DEFAULT_EXTENSION_ID = "dynamicDefinitions";
@@ -52,7 +56,7 @@ public final class DynamicDefinitionsDocumentExtension extends DefinitionsDocume
      * @param contentPath the base Path where the content is stored
      * @param extensionMarkupLanguage the MarkupLanguage of the extension content
      */
-    public DynamicDefinitionsDocumentExtension(Path contentPath, MarkupLanguage extensionMarkupLanguage) {
+    public DynamicDefinitionsDocumentExtension(List<Path> contentPath, MarkupLanguage extensionMarkupLanguage) {
         this(null, contentPath, extensionMarkupLanguage);
     }
 
@@ -62,7 +66,7 @@ public final class DynamicDefinitionsDocumentExtension extends DefinitionsDocume
      * @param contentPath the base Path where the content is stored
      * @param extensionMarkupLanguage the MarkupLanguage of the extension content
      */
-    public DynamicDefinitionsDocumentExtension(String extensionId, Path contentPath, MarkupLanguage extensionMarkupLanguage) {
+    public DynamicDefinitionsDocumentExtension(String extensionId, List<Path> contentPath, MarkupLanguage extensionMarkupLanguage) {
         super();
         Validate.notNull(extensionMarkupLanguage);
         Validate.notNull(contentPath);
@@ -80,20 +84,16 @@ public final class DynamicDefinitionsDocumentExtension extends DefinitionsDocume
     @Override
     public void init(Swagger2MarkupConverter.Context globalContext) {
         Swagger2MarkupProperties extensionsProperties = globalContext.getConfig().getExtensionsProperties();
-        Optional<Path> contentPathProperty = extensionsProperties.getPath(extensionId + "." + PROPERTY_CONTENT_PATH);
-        if (contentPathProperty.isPresent()) {
-            contentPath = contentPathProperty.get();
-        }
-        else {
-            if (contentPath == null) {
-                if (globalContext.getSwaggerLocation() == null || !globalContext.getSwaggerLocation().getScheme().equals("file")) {
-                    if (logger.isWarnEnabled())
-                        logger.warn("Disable DynamicDefinitionsContentExtension > Can't set default contentPath from swaggerLocation. You have to explicitly configure the content path.");
-                } else {
-                    contentPath = Paths.get(globalContext.getSwaggerLocation()).getParent();
-                }
+        contentPath = extensionsProperties.getPathList(extensionId + "." + PROPERTY_CONTENT_PATH);
+        if (contentPath.isEmpty()) {
+            if (globalContext.getSwaggerLocation() == null || !globalContext.getSwaggerLocation().getScheme().equals("file")) {
+                if (logger.isWarnEnabled())
+                    logger.warn("Disable DynamicDefinitionsContentExtension > Can't set default contentPath from swaggerLocation. You have to explicitly configure the content path.");
+            } else {
+                contentPath.add(Paths.get(globalContext.getSwaggerLocation()).getParent());
             }
         }
+
         Optional<MarkupLanguage> extensionMarkupLanguageProperty = extensionsProperties.getMarkupLanguage(extensionId + "." + PROPERTY_MARKUP_LANGUAGE);
         if (extensionMarkupLanguageProperty.isPresent()) {
             extensionMarkupLanguage = extensionMarkupLanguageProperty.get();
@@ -108,18 +108,21 @@ public final class DynamicDefinitionsDocumentExtension extends DefinitionsDocume
             DynamicContentExtension dynamicContent = new DynamicContentExtension(globalContext, context);
             DynamicDefinitionsDocumentExtension.Position position = context.getPosition();
             switch (position) {
-                case DOCUMENT_BEFORE:
-                case DOCUMENT_AFTER:
-                case DOCUMENT_BEGIN:
-                case DOCUMENT_END:
-                    dynamicContent.extensionsSection(extensionMarkupLanguage, contentPath, contentPrefix(position), levelOffset(context));
-                    break;
-                case DEFINITION_BEFORE:
-                case DEFINITION_BEGIN:
-                case DEFINITION_END:
-                case DEFINITION_AFTER:
-                    dynamicContent.extensionsSection(extensionMarkupLanguage, contentPath.resolve(Paths.get(IOUtils.normalizeName(context.getDefinitionName().get()))), contentPrefix(position), levelOffset(context));
-                    break;
+            case DOCUMENT_BEFORE:
+            case DOCUMENT_AFTER:
+            case DOCUMENT_BEGIN:
+            case DOCUMENT_END:
+                dynamicContent.extensionsSection(extensionMarkupLanguage, contentPath, contentPrefix(position), levelOffset(context));
+                break;
+            case DEFINITION_BEFORE:
+            case DEFINITION_BEGIN:
+            case DEFINITION_END:
+            case DEFINITION_AFTER:
+                List<Path> resolvedPaths = contentPath.stream().map(
+                        p -> p.resolve(Paths.get(IOUtils.normalizeName(context.getDefinitionName().get()))))
+                        .collect(Collectors.toList());
+                dynamicContent.extensionsSection(extensionMarkupLanguage, resolvedPaths, contentPrefix(position), levelOffset(context));
+                break;
             }
         }
     }
