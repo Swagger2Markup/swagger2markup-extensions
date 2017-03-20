@@ -3,3 +3,4 @@
 :hardbreaks:
 
 image:https://travis-ci.org/Swagger2Markup/swagger2markup-extensions.svg?branch=master["Build Status", link="https://travis-ci.org/Swagger2Markup/swagger2markup-extensions"]
+image:https://api.bintray.com/packages/swagger2markup/Maven/swagger2markup-extensions/images/download.svg[link="https://bintray.com/swagger2markup/Maven/swagger2markup-extensions/_latestVersion"]
